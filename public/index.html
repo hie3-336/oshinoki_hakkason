@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>推しの木MAP</title>
+  <meta name="description" content="推しの樹木と出会える「推しの木」というサービスです！東京都オープンデータハッカソン用デモ" />
+
+  <link rel="stylesheet" href="./plugin/leaflet@1.7.1/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <link href="./src/stylesheet.css" rel="stylesheet"/>
+  <!-- <script src="./assets/animal.geojson"></script> -->
+
+<!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<!-- jQuery UI -->
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+  <!-- https://github.com/domoritz/leaflet-locatecontrol -->
+  <link rel="stylesheet" href="./plugin/leaflet-locatecontrol/dist/L.Control.Locate.css" />
+  <!--現在地アイコン <script src="./plugin/leaflet-locatecontrol/src/L.Control.Locate.js" charset="utf-8"></script> -->
+  <script src="./plugin/leaflet-locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+  <!-- https://github.com/lennardv2/Leaflet.awesome-markers -->
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="./plugin/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css">
+  <script src="./plugin/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
+
+  <!-- https://github.com/targomo/Leaflet.CondensedAttribution 
+  <link rel="stylesheet" href="./plugin/Leaflet.CondensedAttribution/dist/leaflet-control-condended-attribution.css" />
+  <script type="text/javascript" src="./plugin/Leaflet.CondensedAttribution/dist/leaflet-control-condended-attribution.js"></script>-->
+  
+  <!-- https://github.com/consbio/Leaflet.HtmlLegend -->
+  <link rel="stylesheet" href="./plugin/Leaflet.HtmlLegend/dist/L.Control.HtmlLegend.css"/>
+  <script src="./plugin/Leaflet.HtmlLegend/dist/L.Control.HtmlLegend.js"></script>
+
+  <!-- https://github.com/mapshakers/leaflet-control-window -->
+  <link rel="stylesheet" href="./plugin/leaflet-control-window/src/L.Control.Window.css" />
+  <script src="./plugin/leaflet-control-window/src/L.Control.Window.js"></script>
+
+  <!-- https://github.com/CliffCloud/Leaflet.EasyButton-->
+  <link rel='stylesheet' href='./plugin/Leaflet.EasyButton/src/easy-button.css'/>
+  <script src='./plugin/Leaflet.EasyButton/src/easy-button.js'></script> 
+
+  <!-- https://github.com/stefanocudini/leaflet-search -->
+  <link rel="stylesheet" href="./plugin/leaflet-search/src/leaflet-search.css">
+  <script src="./plugin/leaflet-search/src/leaflet-search.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+  <!-- Utility classes for CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/@ivteplo/utilities.css@1.0.0/build/main.css">
+
+  <!-- Swiper.js -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+
+  <!-- Sweet alert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+  <!-- Custom stylesheet -->
+  <!-- Script that makes the sheet work -->
+  <link rel="stylesheet" href="./src/bottomsheet.css">
+  <script src="./src/bottomsheet.js" defer></script>
+</head>
+
+<body>
+      <!-- The sheet component -->
+      <header>   
+
+<div class="header-left">
+  <img class="menuicon" src="./assets/icon/menuicon.png" alt="" >
+</div>
+
+
+
+<div class="header-right">
+  <img class="loginicon" src="./assets/icon/loginicon.png" alt="" >
+</div>
+
+<div class="header-center">
+  <img class="titlelogo" src="./assets/icon/titlelogo.png" alt="" >
+</div>
+</header>
+
+      <div id="map"></div>
+      <script src="./src/config.js"></script>
+      <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
+        <!-- Dark background for the sheet -->
+        <div class="overlay"></div> 
+  
+        <!-- The sheet itself -->
+        <div class="contents">
+          <!-- Sheet controls -->
+          <header class="controls">
+            <!-- The thing to drag if you want to resize the sheet -->
+            <div class="draggable-area">
+              <div class="draggable-thumb"></div>
+            </div>
+            <!-- Button to close the sheet -->
+            <button class="close-sheet" type="button" title="Close the sheet">&times;</button>
+          </header>
+          
+          <!-- Body of the sheet -->
+          <main class="body">
+
+            <article>
+              <p id="animalTitle"></p>
+                <div id="swiper" class="swiper">
+                  <div id="imgSwiper">
+                  </div>
+                  <hr class="marT">
+                  <p><b>投稿写真</b></p>
+                  <div id="addimg">
+                  <img id="imagePreview" src="" alt="Image Preview" />
+                  </div>
+                </div>
+              
+              <!-- HTMLコード -->
+              <div class="toggle_button" id="toggle_button">
+              </div>
+              <hr class="marT">
+              <p><b>プロフィール</b></p>
+              <p id="treeExplain">test</p>
+            </article>
+          </main>
+        </div>
+      </div>
+        <!-- Button to open a sheet 
+        <button type="button" id="open-sheet" aria-controls="sheet">Open Sheet</button>-->
+        <script src="./src/script.js"></script>
+</body>
+</html>

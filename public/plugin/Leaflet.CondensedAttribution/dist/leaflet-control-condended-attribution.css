@@ -1,0 +1,49 @@
+.leaflet-container .leaflet-condensed-attribution {
+    margin: 10px;
+    padding: 0;
+    border-radius: 15px;
+    border: px solid rgba(0,0,0,.2);
+    background: rgba(255,255,255,.8);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    vertical-align:center;
+}
+@media screen and (max-width: 541px){
+  .leaflet-condensed-attribution .attributes-body {
+    display: none;
+    padding: 0 4px 0 12px;
+    height: 20px;
+    line-height: 15px;  
+  }
+}
+@media screen and (min-width: 541px){
+  .leaflet-condensed-attribution .attributes-body {
+    display: none;
+    padding: 0 4px 0 12px;
+    height: 20px;
+    line-height: 30px;  
+  }
+}
+
+
+.leaflet-condensed-attribution:hover .attributes-body {
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.leaflet-condensed-attribution .attributes-emblem {
+  height: 15px;
+  width: 15px;
+  font-size: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+

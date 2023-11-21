@@ -1,0 +1,209 @@
+html, body, article {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+  width: 100%;
+  height: 8%;
+
+}
+
+.header-left{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: left;
+}
+
+.menuicon{
+  padding-left: 5px;
+  height: 50px; 
+  display: block;
+}
+
+.header-center{
+  height: 100%;
+  
+  display: flex;
+  align-items: center;
+  float: center;
+}
+
+.titlelogo{
+  margin: auto;
+  height: 50px; 
+  display: block;
+}
+
+.header-right{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: right;
+  padding-right:10px;
+}
+
+.loginicon{
+  height: 40px; 
+  display: block;
+}
+
+#map {
+    z-index: 0;
+    height: 92%;
+}
+
+.control-window{
+    width:80%;
+    height: auto;
+}
+
+.leaflet-container {
+  /*background-image: url(../assets/back.jpg);*/
+  outline: 0;
+}
+
+.radio_lb {
+    display:block;
+    cursor: pointer;
+  }
+
+.padB{
+    padding-bottom: 5px;
+}
+
+.marT{
+  margin-top: 10px;
+}
+
+.padL{
+    padding-left: 20px;
+}
+
+.textform{
+    width:200px;
+    height:50px;
+}
+
+.btn {  
+  color: #000;
+  background-color: #f6fff7;
+  border-color: #98fb98;
+  border-width: 3px;
+  margin-left: 5px;
+  font-size: medium;
+  }
+
+.AddImgBtn{
+  display: inline-block;      /* インラインブロック要素にする */
+  background-color:  #d8d8d8;   /* 背景色指定 */
+  width: 22%;
+  height: 125px;              /* 高さ指定 */
+  vertical-align: top;
+  border-radius: 0%;
+  margin-top: 2px;
+  text-align: center;
+  line-height: 125px;
+}
+
+.PreviewImgBtn{
+  display: inline-block;      /* インラインブロック要素にする */
+  background-color:  #d8d8d8;   /* 背景色指定 */
+  width: 90%;
+  height: 125px;              /* 高さ指定 */
+  vertical-align: top;
+  border-radius: 0%;
+  margin-top: 2px;
+  text-align: center;
+  line-height: 125px;
+}
+
+.custom-div-icon i.awesome {
+  margin: 12px auto;
+  font-size: 17px;
+}
+
+.swiper {
+  height: auto;
+}@media screen and (min-width:300px) {
+  .swiper {
+    width: 300px;
+  }
+}@media screen and (min-width:700px) {
+  .swiper {
+    width: 600px;
+  }
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inline-block_topimg {
+  display: inline-block;      /* インラインブロック要素にする */
+  /*background-color:  #ebebeb;     背景色指定 */
+  padding:  2px;             /* 余白指定 */
+  width: 90%;
+  height: 150px;              /* 高さ指定 */
+  object-fit: cover;        /* トリミング */
+}
+
+.inline-block_img {
+  display: inline-block;      /* インラインブロック要素にする */
+  /*background-color:  #ebebeb;     背景色指定 */
+  padding:  2px;             /* 余白指定 */
+  width: 22%;
+  height: 125px;              /* 高さ指定 */
+  object-fit: cover;        /* トリミング */
+}
+
+/*吹き出し追記*/
+.balloon_l{
+  margin: 30px 0;
+  display:flex;
+  justify-content: flex-start;
+  align-items: flex-start; /*縦位置を上揃え*/
+/*   align-items: center; */ /*縦位置を真ん中揃え*/
+}
+.faceicon img{
+  width: 80px; /*任意のサイズ*/
+  height: auto;
+}
+.balloon_l .faceicon{
+  margin-right:25px;
+}
+.says {
+  max-width:500px; /*最大幅は任意*/
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+  padding: 17px 13px 15px 18px;
+  border-radius: 12px;
+  background: #98fb98;/*色は任意*/
+  box-sizing:border-box;
+  margin:0 !important;
+  line-height:1.5;
+/*   align-items: center; */
+}
+.says p{
+  margin:8px 0 0 !important; 
+}
+.says p:first-child{
+  margin-top:0 !important;
+}
+.says:after {
+  content: "";
+  position: absolute;
+  border: 10px solid transparent;
+/*   margin-top:-3px;  */
+}
+.balloon_l .says:after {
+  left: -26px;
+  border-right: 22px solid #98fb98;
+}
