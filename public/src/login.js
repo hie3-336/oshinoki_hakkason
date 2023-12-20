@@ -30,6 +30,7 @@ const handleSignUp = async () => {
             const errorMessage = error.message;
             console.log("errorCode", errorCode);
             console.log("errorMessage", errorMessage);
+            window.alert(ErrorPopup(errorCode));
         });
     };
 
@@ -49,6 +50,7 @@ const handleSignIn = async () => {
             const errorMessage = error.message;
             console.log("errorCode", errorCode);
             console.log("errorMessage", errorMessage);
+            window.alert(ErrorPopup(errorCode));
         });
 };
 
@@ -95,6 +97,30 @@ if(resetPasswordForm != null){
             const errorMessage = error.message;
             console.error('Error sending password reset email:', errorCode, errorMessage);
             // エラーをユーザーに通知する処理を追加
+            window.alert(ErrorPopup(errorCode));
         });
     });
 };
+
+const ErrorPopup = (e) => {
+    switch(e){
+        case'auth/email-already-in-use':
+            return 'すでにそのメールアドレスは使用されています。';
+        case'auth/invalid-email':
+            return '無効なメールアドレスです。';
+        case'auth/operation-not-allowed':
+            return '電子メール/パスワードアカウントが有効ではありません。管理者にお問い合わせください。';
+        case'auth/weak-password':
+            return '6文字以上のパスワードを入力してください。';
+        case'auth/user-disabled':
+            return '無効なユーザーです';
+        case'auth/user-not-found':
+            return 'アカウントが見つかりません';
+        case'auth/wrong-password':
+            return '指定されたメールアドレスに紐づくパスワードが無効または未設定です';        
+        case'auth/invalid-continue-uri':
+            return 'リクエストされたURLが無効です。管理者にお問い合わせください。';      
+        case'auth/invalid-login-credentials':
+            return 'メールアドレスまたはパスワードを再度ご確認ください'  
+    }
+}
