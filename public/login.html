@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>推しの木MAP</title>
+  <meta name="description" content="推しの樹木と出会える「推しの木」というサービスです！東京都オープンデータハッカソン用デモ" />
+  <link href="./src/stylesheet.css" rel="stylesheet"/>
+  <!-- The core FireBase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script> 
+    <script src="./src/config.js"></script>
+
+</head>
+
+  <body>
+    <h1>推しの木</h1>
+    <div class="form-wrapper">
+      <h1>ログイン情報入力</h1>
+      <form>
+        <div class="form-item">
+          <label for="email"></label>
+          <input type="email" name="email" required="required" placeholder="メールアドレス"></input>
+        </div>
+        <div class="form-item">
+          <label for="password"></label>
+          <input type="password" name="password" required="required" placeholder="パスワード"></input>
+        </div>
+        <div class="button-panel">
+          <input type="submit" class="button" title="Sign In" value="ログイン" id="signInButton"></input>
+        </div>
+      </form>
+      <div class="form-footer">
+        <p><a href="./signup.html">新規アカウント登録</a></p>
+        <p><a href="passforget.html">パスワードを忘れた方はこちら</a></p>
+      </div>
+    </div>
+  
+    <script type="module" src="./src/login.js"></script>
+
+  </body>
+
+</html>

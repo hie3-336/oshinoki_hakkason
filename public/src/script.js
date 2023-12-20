@@ -1,3 +1,10 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
+// Firebaseの初期化
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+const user = auth.currentUser;
+
 // Firestore,Storageの初期化
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -23,12 +30,12 @@ let osm = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom:22
 });
 
-mapboxaccessToken = 'pk.eyJ1IjoidXl1a3V5YSIsImEiOiJjbG5pZ3Q2NjIxcDFxMmttajZmb2E4OXR2In0.A624u6Z5MY-x50Oo06C0Wg';
+/* mapboxaccessToken = 'pk.eyJ1IjoidXl1a3V5YSIsImEiOiJjbG5pZ3Q2NjIxcDFxMmttajZmb2E4OXR2In0.A624u6Z5MY-x50Oo06C0Wg';
 
 let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=' + mapboxaccessToken, {
     attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom:22
-});
+}); */
 
 //ベースマップ
 let baseLayers = {
@@ -36,7 +43,7 @@ let baseLayers = {
     "地理院地図 淡色": gsi_awai,
     "地理院地図 衛星画像": gsi_eisei,
     "OpenStreetMap 標準": osm,
-    "mapbox":mapbox
+    //"mapbox":mapbox
 };  
 
 //マップのオプションたち
@@ -77,7 +84,6 @@ let lc = L.control.locate({
 }).addTo(mymap);
 
 //モーダルプラグインーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-
 let options = {
     title:'<big><b>推しの木MAP</b></big>',
     content:'<h3><u>はじめに</u></h3><p>推しの樹木と出会える「推しの木」というサービスです！（※東京都オープンデータハッカソン用デモサイト）</p><h3><u>使い方</u></h3><p>①このダイアログを読み終えたら右下の<b>OKボタンを押してください</b>。<br>②位置情報許可のポップアップが表示されるので、許可すると現在地まで飛んでいきます。<br><h3><u>各ボタンの説明</u></h3><p><img src="./assets/layers.png">　背景地図を選ぶ<br><img src="./assets/location-arrow.png">　現在地の表示・非表示</p><p style="text-align:right;">',
@@ -260,40 +266,6 @@ function MikiBtnClick(docId){
         console.error("Error updating document: ", error);
     });;
 
-/*	// 入力ダイアログを表示 ＋ 入力内容を user に代入
-	let mikisyu = Number(window.prompt("幹周を入力してください", ""));
-
-
- 	// 入力内容が tama の場合は example_tama.html にジャンプ
-    if(!isNaN(mikisyu)){
-        db.collection("features").doc(docId).update({幹周: mikisyu})
-        .then(() => {
-                // "success" "warning" "error" "info" の４種類のアイコンがある
-                Swal.fire({
-                  type:"success",
-                  title: "幹周更新しました",
-                  text:"ありがとう！これからも成長見守ってね"
-                });
-            
-                // 更新後のデータを再度取得してHTML要素に反映
-                db.collection("features").doc(docId).get().then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        document.getElementById("mikisyu").textContent = data.幹周 + 'ｃｍ';
-                    } else {
-                        console.error("Document does not exist");
-                    }
-            
-                })
-        .catch((error) => {
-            // The document probably doesn't exist.
-            console.error("Error updating document: ", error);
-        });
-	    })
-    .catch((error) => {
-        console.error("Error updating document: ", error);
-    });
-    }; */
 };
 
 // 画像がアップロードされた後に呼び出されるコールバック関数
