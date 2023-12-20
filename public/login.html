@@ -6,96 +6,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>推しの木MAP</title>
   <meta name="description" content="推しの樹木と出会える「推しの木」というサービスです！東京都オープンデータハッカソン用デモ" />
-  
-  <!-- <script src="./assets/animal.geojson"></script> -->
+  <link href="./src/stylesheet.css" rel="stylesheet"/>
+  <!-- The core FireBase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script> 
+    <script src="./src/config.js"></script>
 
-<!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-<!-- jQuery UI -->
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
-  
-  <!-- <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js"></script>   -->
-
-  <!-- Utility classes for CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/@ivteplo/utilities.css@1.0.0/build/main.css">
-
-  <!-- Swiper.js -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-
-  <!-- Sweet alert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
-
-  <!-- <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script> -->
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
 </head>
 
-<body>
-      <!-- The sheet component -->
+  <body>
+    <h1>推しの木</h1>
+    <div class="form-wrapper">
+      <h1>ログイン情報入力</h1>
+      <form>
+        <div class="form-item">
+          <label for="email"></label>
+          <input type="email" name="email" required="required" placeholder="メールアドレス"></input>
+        </div>
+        <div class="form-item">
+          <label for="password"></label>
+          <input type="password" name="password" required="required" placeholder="パスワード"></input>
+        </div>
+        <div class="button-panel">
+          <input type="submit" class="button" title="Sign In" value="ログイン" id="signInButton"></input>
+        </div>
+      </form>
+      <div class="form-footer">
+        <p><a href="./signup.html">新規アカウント登録</a></p>
+        <p><a href="passforget.html">パスワードを忘れた方はこちら</a></p>
+      </div>
+    </div>
+  
+    <script type="module" src="./src/login.js"></script>
 
+  </body>
 
-      
-
-      <!-- <script type="module" src="./src/config.js"></script> -->
-
-      
-      <script type="module">
-        // import { } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase.js'
-        // import { } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js'
-        // import { } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js'
-        // import { } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js'
-        // import { } from 'https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js'
-        import { } from 'https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth__ja.js'
-        import { } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js'
-        import { } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js'
-        import { } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js'
-        
-
-        const firebaseConfig = {
-  apiKey: "AIzaSyBUIkHBtsblFSbeGTpouzJkh-6-yvccBPc",
-  authDomain: "oshinoki-7a262.firebaseapp.com",
-  projectId: "oshinoki-7a262",
-  storageBucket: "oshinoki-7a262.appspot.com",
-  messagingSenderId: "176656763948",
-  appId: "1:176656763948:web:22552d0021c9581fdc1589",
-  measurementId: "G-2TQ7EWLX4D"
-}; 
-
-// Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-
-let uiConfig = {
-    callbacks: {
-        signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-            console.log("ログイン成功")
-            return true;
-        },
-    },
-    signInSuccessUrl:'./index.html',
-    signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    ],
-};
-
-
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
-ui.start('#firebaseui-auth-container', uiConfig);
-const auth = firebase.auth();
-
-
-
-
-      </script>
-        <!-- Button to open a sheet 
-        <button type="button" id="open-sheet" aria-controls="sheet">Open Sheet</button>-->
-
-
-        <h1>推しの木　<br>アカウント新規登録テスト</h1>
-        <div id="firebaseui-auth-container"></div>
-
-</body>
 </html>
