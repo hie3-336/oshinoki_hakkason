@@ -3,16 +3,78 @@ import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/
 // Firebaseの初期化
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const user = auth.currentUser;
-
 // Firestore,Storageの初期化
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+//ログインアイコン編集
+const loginButton = document.getElementById('loginButton');
+const profileButton = document.getElementById('profileButton');
+const profileLink = document.getElementById('profileLink');
+// 仮のログイン状態を表す変数
+let isLoggedIn = false;
 
 // 変数の宣言
 let did = []
 let treeMarkers = []; let imageWidth = 90;
 let now = new Date();
+let displayName;
+
+// index.htmlのURLからuser_idのクエリパラメーターを取得する
+const userId = getParameterByName('user_id');
+
+// ユーザー情報を取得
+auth.onAuthStateChanged((user) => {
+    if (user) {
+      if (user.uid === userId) {
+        // ユーザーがログインしており、対象のユーザーIDにマッチした場合
+        displayName = user.displayName;
+        console.log('DisplayName:', displayName);
+        // displayNameを使って必要な処理を行う
+        isLoggedIn = true;
+        // ログイン状態を確認
+        checkLoginStatus();
+        modalView(displayName);
+      } else {
+        console.log('指定されたユーザーIDのユーザーが見つかりません');
+      }
+    } else {
+      console.log('ユーザーがログインしていません');
+      displayName = '[未ログイン]'
+      modalView(displayName);
+    }
+});
+
+//モーダルプラグインーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+const modalView = (DN) => {
+    let options = {
+        title:'<big><b>推しの木MAP</b></big>',
+        content:'<h3>ようこそ'+ DN +'さん</h3><h3><u>はじめに</u></h3><p>推しの樹木と出会える「推しの木」というサービスです！（※東京都オープンデータハッカソン用デモサイト）</p><h3><u>使い方</u></h3><p>①このダイアログを読み終えたら右下の<b>OKボタンを押してください</b>。<br>②位置情報許可のポップアップが表示されるので、許可すると現在地まで飛んでいきます。<br><h3><u>各ボタンの説明</u></h3><p><img src="./assets/layers.png">　背景地図を選ぶ<br><img src="./assets/location-arrow.png">　現在地の表示・非表示</p><p style="text-align:right;">',
+        modal: true,
+        position:'center',
+        closeButton:false
+    };
+    let win =  L.control.window(mymap, options)
+    .prompt({callback:function(){
+        //OKボタンを押したら初期から現在地を探す
+        lc.start()
+        }
+    }).show()
+}
+
+// ログイン状態を確認する関数
+function checkLoginStatus() {
+  if (isLoggedIn) {
+    loginButton.style.display = 'none'; // ログインボタンを非表示にする
+    profileButton.style.display = 'flex'; // プロフィールボタンを表示する
+    profileLink.href = `./profile.html?user_id=${userId}`;
+  } else {
+    loginButton.style.display = 'flex'; // ログインボタンを表示する
+    profileButton.style.display = 'none'; // プロフィールボタンを非表示にする
+  }
+}
+// ログイン状態を確認
+checkLoginStatus();
 
 //Leafletの設定――――――――――――――――――――――――――――――――
 //ベースマップ
@@ -56,13 +118,6 @@ let mymap = L.map('map',{
     layers:[osm],
 });
 
-/* //attributionのまとめプラグインーーーーーーーーーーーーーーーーーーーーーーー
-L.control.condensedAttribution({
-    emblem: '<div class="emblem-wrap"><i class="far fa-copyright"></i></div>',
-    prefix: '<a href="http://leafletjs.com" title="A JS library for interactive maps">Leaflet</a>',
-    position: 'bottomleft'
-  }).addTo(mymap); */
-
 //レイヤコントール追加
 L.control.layers(baseLayers).addTo(mymap);
 mymap.zoomControl.setPosition('bottomleft');
@@ -82,21 +137,6 @@ let lc = L.control.locate({
     },
     position: 'bottomright'
 }).addTo(mymap);
-
-//モーダルプラグインーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-let options = {
-    title:'<big><b>推しの木MAP</b></big>',
-    content:'<h3><u>はじめに</u></h3><p>推しの樹木と出会える「推しの木」というサービスです！（※東京都オープンデータハッカソン用デモサイト）</p><h3><u>使い方</u></h3><p>①このダイアログを読み終えたら右下の<b>OKボタンを押してください</b>。<br>②位置情報許可のポップアップが表示されるので、許可すると現在地まで飛んでいきます。<br><h3><u>各ボタンの説明</u></h3><p><img src="./assets/layers.png">　背景地図を選ぶ<br><img src="./assets/location-arrow.png">　現在地の表示・非表示</p><p style="text-align:right;">',
-    modal: true,
-    position:'center',
-    closeButton:false
-};
-let win =  L.control.window(mymap, options)
-.prompt({callback:function(){
-    //OKボタンを押したら初期から現在地を探す
-    lc.start()
-    }
-}).show()
 
 //検索ボックス追加
 let searchLayer = new L.LayerGroup();
@@ -313,3 +353,15 @@ function previewFile(docId){
             });
     });
 }
+
+// URLからクエリパラメーターを取得する関数
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+

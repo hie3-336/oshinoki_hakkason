@@ -69,71 +69,71 @@
 </head>
 
 <body>
-      <!-- The sheet component -->
-      <header>   
+<!-- The sheet component -->
+  <header>   
+    <div class="header-left">
+      <img class="menuicon" src="./assets/icon/menuicon.png" alt="" >
+    </div>
+    <div class="header-right" style="display: none;" id="loginButton">
+      <a href="./login.html">
+        <img class="loginicon" src="./assets/icon/loginicon.png" alt="" >
+      </a>
+    </div>
+    <div class="header-right" style="display: none;" id="profileButton">
+      <a href="./profile.html" id="profileLink">
+        <img class="loginicon" src="./assets/icon/profileicon.png" alt="" >
+      </a>
+    </div>
+    <div class="header-center">
+      <img class="titlelogo" src="./assets/icon/titlelogo.png" alt="" >
+    </div>
+  </header>
 
-<div class="header-left">
-  <img class="menuicon" src="./assets/icon/menuicon.png" alt="" >
-</div>
+  <div id="map"></div>
+  <script src="./src/config.js"></script>
+  <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
+    <!-- Dark background for the sheet -->
+    <div class="overlay"></div> 
 
+    <!-- The sheet itself -->
+    <div class="contents">
+      <!-- Sheet controls -->
+      <header class="controls">
+        <!-- The thing to drag if you want to resize the sheet -->
+        <div class="draggable-area">
+          <div class="draggable-thumb"></div>
+        </div>
+        <!-- Button to close the sheet -->
+        <button class="close-sheet" type="button" title="Close the sheet">&times;</button>
+      </header>
+      
+      <!-- Body of the sheet -->
+      <main class="body">
 
-
-<div class="header-right">
-  <a href="./login.html">
-    <img class="loginicon" src="./assets/icon/loginicon.png" alt="" >
-  </a>
-</div>
-
-<div class="header-center">
-  <img class="titlelogo" src="./assets/icon/titlelogo.png" alt="" >
-</div>
-</header>
-
-      <div id="map"></div>
-      <script src="./src/config.js"></script>
-      <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
-        <!-- Dark background for the sheet -->
-        <div class="overlay"></div> 
-  
-        <!-- The sheet itself -->
-        <div class="contents">
-          <!-- Sheet controls -->
-          <header class="controls">
-            <!-- The thing to drag if you want to resize the sheet -->
-            <div class="draggable-area">
-              <div class="draggable-thumb"></div>
-            </div>
-            <!-- Button to close the sheet -->
-            <button class="close-sheet" type="button" title="Close the sheet">&times;</button>
-          </header>
-          
-          <!-- Body of the sheet -->
-          <main class="body">
-
-            <article>
-              <p id="animalTitle"></p>
-                <div id="swiper" class="swiper">
-                  <div id="imgSwiper">
-                  </div>
-                  <hr class="marT">
-                  <p><b>投稿写真</b></p>
-                  <div id="addimg">
-                  <img id="imagePreview" src="" alt="Image Preview" />
-                  </div>
-                </div>
-              
-              <!-- HTMLコード -->
-              <div class="toggle_button" id="toggle_button">
+        <article>
+          <p id="animalTitle"></p>
+            <div id="swiper" class="swiper">
+              <div id="imgSwiper">
               </div>
               <hr class="marT">
-              <p><b>プロフィール</b></p>
-              <p id="treeExplain">test</p>
-            </article>
-          </main>
-        </div>
-      </div>
-        <!-- Button to open a sheet 
-        <button type="button" id="open-sheet" aria-controls="sheet">Open Sheet</button>-->
-        <script type="module" src="./src/script.js"></script>
+              <p><b>投稿写真</b></p>
+              <div id="addimg">
+              <img id="imagePreview" src="" alt="Image Preview" />
+              </div>
+            </div>
+          
+          <!-- HTMLコード -->
+          <div class="toggle_button" id="toggle_button">
+          </div>
+          <hr class="marT">
+          <p><b>プロフィール</b></p>
+          <p id="treeExplain">test</p>
+        </article>
+      </main>
+    </div>
+  </div>
+  <!-- Button to open a sheet 
+  <button type="button" id="open-sheet" aria-controls="sheet">Open Sheet</button>-->
+  <script type="module" src="./src/script.js"></script>
 </body>
 </html>
