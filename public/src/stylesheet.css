@@ -243,10 +243,27 @@ form {
   padding: 0 1.5em;
 }
 
-.form-item {
+input[type=email]:required,
+input[type=email]:invalid,
+input[type=password]:required,
+textarea:required {
   margin-bottom: 0.75em;
   width: 100%;
+	border-color: #c20c33;
+	background-color: #f8e8ec;
 }
+
+input[type=email]:valid,
+input[type=password]:valid,
+textarea:valid {
+  margin-bottom: 0.75em;
+  width: 100%;
+  border-color: #b9b9b9;
+	background-color: #fff;
+}
+
+
+
 
 .form-item input {
   background: #fafafa;
@@ -263,6 +280,11 @@ form {
 .form-item input:focus {
   border-bottom: 2px solid #c0c0c0;
   outline: none;
+}
+
+.error-message {
+  color: #f16272;
+  font-weight: bold;
 }
 
 .button-panel {
