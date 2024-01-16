@@ -15,7 +15,19 @@
 </head>
 
   <body>
-    <h1>推しの木</h1>
+    <header>
+      <div class="header-left">
+        <img class="menuicon" src="./assets/icon/menuicon.png" alt="" >
+      </div>
+      <div class="header-right">
+          <img class="loginicon" src="./assets/icon/loginicon.png" disable alt="" >
+      </div>
+      <div class="header-center">
+          <a href="./index.html">
+              <img class="titlelogo" src="./assets/icon/titlelogo.png" alt="">
+          </a>
+      </div>
+    </header>
     <div class="form-wrapper">
       <h1>パスワード再設定</h1>
       <form id="resetPasswordForm">
@@ -23,6 +35,7 @@
           <label for="email"></label>
           <input type="email" name="email" required="required" placeholder="メールアドレス"></input>
         </div>
+        <p id="error-message" class="error-message"></p>
         <div class="button-panel">
           <input type="submit" class="button" title="Reset Password" value="パスワードリセット" id="resetButton"></input>
         </div>
