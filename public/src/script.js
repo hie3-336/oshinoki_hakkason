@@ -274,7 +274,7 @@ function readFirestoreTrees(){
      });
  };
 
-function MikiBtnClick(docId){
+window.MikiBtnClick = (docId) => {
 
     Swal.fire({
         title: "幹周を入力してください",
@@ -338,25 +338,25 @@ function previewFile(docId){
     let storageRef = firebase.storage().ref().child("img/" + AddImgName);
 
      const Inputfile = document.getElementById('AddImg').files;
-    // storageRef.put(Inputfile[0]).then((snapshot) => {
-    //     console.log('firebase storageにアップロード完了');
+    storageRef.put(Inputfile[0]).then((snapshot) => {
+        console.log('firebase storageにアップロード完了');
 
-    //     // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
-    //     storageRef.getDownloadURL()
-    //         .then((url) => {
-    //             // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-    //             imageUrl = url.replace(/^gs:\/\//, 'https://');
-    //             onImageUploadComplete(AddImgName,docId);
-    //                 // 画像を即座に表示する
-    //                 let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
-    //                 let labelElement = document.querySelector('label[for="AddImg"]');
-    //                 labelElement.insertAdjacentHTML('afterend', imgHTML);
-    //         })
-    //         .catch((error) => {
-    //             // エラー処理
-    //             console.error('ダウンロードURLの取得に失敗しました：', error);
-    //         });
-    // });
+        // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
+        storageRef.getDownloadURL()
+            .then((url) => {
+                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+                imageUrl = url.replace(/^gs:\/\//, 'https://');
+                onImageUploadComplete(AddImgName,docId);
+                    // 画像を即座に表示する
+                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+                    let labelElement = document.querySelector('label[for="AddImg"]');
+                    labelElement.insertAdjacentHTML('afterend', imgHTML);
+            })
+            .catch((error) => {
+                // エラー処理
+                console.error('ダウンロードURLの取得に失敗しました：', error);
+            });
+    });
 }
 
 // URLからクエリパラメーターを取得する関数
