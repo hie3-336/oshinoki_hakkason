@@ -99,6 +99,7 @@ let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v1
     maxZoom:22
 }); */
 
+
 //ベースマップ
 let baseLayers = {
     "地理院地図 標準": gsi,
@@ -239,12 +240,16 @@ function readFirestoreTrees(){
                     promises.push(promise);
                 }
 
+
                 // すべてのPromiseが解決された後に画像をHTMLに追加する
                 Promise.all(promises)
                     .then((images) => {
                         addimgHTML = images.join(''); // すべての画像を連結
-                        document.getElementById("addimg").innerHTML = '<input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
+
+                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="myfunc()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
+                        // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
                 });
+
 
 
                 let TreeEra ="";
@@ -332,26 +337,26 @@ function previewFile(docId){
     let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
     let storageRef = firebase.storage().ref().child("img/" + AddImgName);
 
-    const Inputfile = document.getElementById('AddImg').files;
-    storageRef.put(Inputfile[0]).then((snapshot) => {
-        console.log('firebase storageにアップロード完了');
+     const Inputfile = document.getElementById('AddImg').files;
+    // storageRef.put(Inputfile[0]).then((snapshot) => {
+    //     console.log('firebase storageにアップロード完了');
 
-        // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
-        storageRef.getDownloadURL()
-            .then((url) => {
-                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-                imageUrl = url.replace(/^gs:\/\//, 'https://');
-                onImageUploadComplete(AddImgName,docId);
-                    // 画像を即座に表示する
-                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
-                    let labelElement = document.querySelector('label[for="AddImg"]');
-                    labelElement.insertAdjacentHTML('afterend', imgHTML);
-            })
-            .catch((error) => {
-                // エラー処理
-                console.error('ダウンロードURLの取得に失敗しました：', error);
-            });
-    });
+    //     // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
+    //     storageRef.getDownloadURL()
+    //         .then((url) => {
+    //             // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+    //             imageUrl = url.replace(/^gs:\/\//, 'https://');
+    //             onImageUploadComplete(AddImgName,docId);
+    //                 // 画像を即座に表示する
+    //                 let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+    //                 let labelElement = document.querySelector('label[for="AddImg"]');
+    //                 labelElement.insertAdjacentHTML('afterend', imgHTML);
+    //         })
+    //         .catch((error) => {
+    //             // エラー処理
+    //             console.error('ダウンロードURLの取得に失敗しました：', error);
+    //         });
+    // });
 }
 
 // URLからクエリパラメーターを取得する関数
