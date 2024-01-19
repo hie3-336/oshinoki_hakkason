@@ -229,15 +229,45 @@ function readFirestoreTrees(){
                         .then((url) => {
                             // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
                             imageUrl = url.replace(/^gs:\/\//, 'https://');
-                            return '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+                            return '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + j + ')"></img>';
                         })
                         .catch((error) => {
                             // エラー処理
                             console.error('ダウンロードURLの取得に失敗しました：', error);
                             return ''; // エラーの場合は空の文字列を返す
                         });
-
+                    
                     promises.push(promise);
+                }
+                
+                //画像・コメント表示ポップアップ関連
+                window.openimagePopup = (num)  => {
+                    const popup = document.getElementById('commentpopup');
+                    popup.style.display = 'block';
+                    console.log('dd画像テスト',dd.画像[num])
+                    const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + dd.画像[num]);
+
+                    // ダウンロードURLを非同期で取得し、Promiseを返す
+                    gsReferencePopup.getDownloadURL()
+                    .then((url) => {
+                        // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+                        imageUrl = url.replace(/^gs:\/\//, 'https://');
+                        document.getElementById("treeimage").innerHTML ='<img src="' + imageUrl + '"></img> ' ;
+                        document.getElementById("treecomment").innerHTML = dd.ユーザーコメント[num];
+                    })
+                    .catch((error) => {
+                        // エラー処理
+                        console.error('ダウンロードURLの取得に失敗しました：', error);
+                    });
+
+
+
+                    
+                }
+                  
+                window.closeimagePopup = () => {
+                    const popup = document.getElementById('commentpopup');
+                    popup.style.display = 'none';
                 }
 
 
@@ -246,19 +276,23 @@ function readFirestoreTrees(){
                     .then((images) => {
                         addimgHTML = images.join(''); // すべての画像を連結
 
-                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="openPopup()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
+                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="opencommentPopup()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
                         // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
                 });
 
-                window.openPopup = ()  => {
+
+                //コメント投稿ポップアップ関連
+                window.opencommentPopup = ()  => {
                     const popup = document.getElementById('popup');
                     popup.style.display = 'block';
                 }
                   
-                window.closePopup = () => {
+                window.closecommentPopup = () => {
                     const popup = document.getElementById('popup');
                     popup.style.display = 'none';
                 }
+
+                
 
                 //画像投稿のポップアップのHTMLを作成
                 document.getElementById("submitbutton").innerHTML = '<button type="button" onclick="submitForm(\'' + doc.id + '\')">投稿</button>'
@@ -269,7 +303,7 @@ function readFirestoreTrees(){
                     
                     // Check if both file and comment are provided
                     if (fileInput.files.length === 0 || commentInput.value.trim() === '') {
-                        alert('Please select a file and enter a comment before submitting.');
+                        alert('写真の選択とコメントの入力をしてください。');
                         return;
                     }
                     let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
@@ -288,7 +322,10 @@ function readFirestoreTrees(){
                                 imageUrl = url.replace(/^gs:\/\//, 'https://');
                                 onImageUploadComplete(AddImgName,commenttext,docId);
                                     // 画像を即座に表示する
-                                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+                                    
+                                    readFirestoreTrees();
+                                    console.log('TestImg:',ImgNum)
+                                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
                                     let labelElement = document.querySelector('label[for="AddImg"]');
                                     labelElement.insertAdjacentHTML('afterend', imgHTML);
                             })
@@ -320,20 +357,7 @@ function readFirestoreTrees(){
                         });
                     }
                     
-                    // // Get file information
-                    // const file = fileInput.files[0];
-                    // const fileName = file.name;
-                    // const fileSize = file.size;
-                    
-                    // // Get comment information
-                    // const comment = commentInput.value;
-
-
-                    
-                    // TODO: Perform actions with file and comment data (e.g., send to server)
-                    
-                    // Close the popup
-                    closePopup();
+                    closecommentPopup();
                 }
 
 
