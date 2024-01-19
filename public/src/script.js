@@ -304,7 +304,7 @@ function readFirestoreTrees(){
                         console.log('ユーザー名テスト',displayName);
                         db.collection("features").doc(docId).update({
                             画像: firebase.firestore.FieldValue.arrayUnion(uploadedImageUrl),
-                            コメント: firebase.firestore.FieldValue.arrayUnion(comment),
+                            ユーザーコメント: firebase.firestore.FieldValue.arrayUnion(comment),
                             ユーザー: firebase.firestore.FieldValue.arrayUnion(displayName)
                         })
                         .then(() => {
