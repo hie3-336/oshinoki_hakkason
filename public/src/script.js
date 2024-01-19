@@ -111,7 +111,8 @@ let baseLayers = {
 
 //マップのオプションたち
 let mymap = L.map('map',{
-    center:[35.493100018956305, 139.52622316955814],
+    //杉並区の荻窪公園付近を初期位置に設定
+    center:[35.697605, 139.619773],
     zoom:15,
     maxZoom:22,
     minZoom:10,
@@ -215,13 +216,12 @@ function readFirestoreTrees(){
                 let addimgHTML = "";
                 let promises = [];
                 let ImgNum = dd.画像.length;
-                if(ImgNum<3){
-                    ImgNum=ImgNum;
-                }else {
-                    ImgNum = Math.min(ImgNum, 3); // ImgNumが3より多い場合は3に制限
+                let lastImg = 0;
+                if(ImgNum>=3){
+                    lastImg = ImgNum - 3;
                 };
 
-                for (let j = ImgNum - 1; j >= 0; j--) {
+                for (let j = ImgNum - 1; j >= lastImg; j--) {
                     let gsReferenceMulti = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + dd.画像[j]);
 
                     // ダウンロードURLを非同期で取得し、Promiseを返す
@@ -246,9 +246,95 @@ function readFirestoreTrees(){
                     .then((images) => {
                         addimgHTML = images.join(''); // すべての画像を連結
 
-                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="myfunc()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
+                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="openPopup()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
                         // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
                 });
+
+                window.openPopup = ()  => {
+                    const popup = document.getElementById('popup');
+                    popup.style.display = 'block';
+                }
+                  
+                window.closePopup = () => {
+                    const popup = document.getElementById('popup');
+                    popup.style.display = 'none';
+                }
+
+                //画像投稿のポップアップのHTMLを作成
+                document.getElementById("submitbutton").innerHTML = '<button type="button" onclick="submitForm(\'' + doc.id + '\')">投稿</button>'
+                
+                window.submitForm = (docId) => {
+                    const fileInput = document.getElementById('fileInput');
+                    const commentInput = document.getElementById('commentInput');
+                    
+                    // Check if both file and comment are provided
+                    if (fileInput.files.length === 0 || commentInput.value.trim() === '') {
+                        alert('Please select a file and enter a comment before submitting.');
+                        return;
+                    }
+                    let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
+                    let storageRef = firebase.storage().ref().child("img/" + AddImgName);
+                
+                    //コメント情報読み込み
+                    let commenttext = commentInput.value;
+                    
+                    storageRef.put(fileInput.files[0]).then((snapshot) => {
+                        console.log('firebase storageにアップロード完了');
+                
+                        // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
+                        storageRef.getDownloadURL()
+                            .then((url) => {
+                                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+                                imageUrl = url.replace(/^gs:\/\//, 'https://');
+                                onImageUploadComplete(AddImgName,commenttext,docId);
+                                    // 画像を即座に表示する
+                                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+                                    let labelElement = document.querySelector('label[for="AddImg"]');
+                                    labelElement.insertAdjacentHTML('afterend', imgHTML);
+                            })
+                            .catch((error) => {
+                                // エラー処理
+                                console.error('ダウンロードURLの取得に失敗しました：', error);
+                            });
+                    });
+
+                    // 画像がアップロードされた後に呼び出されるコールバック関数
+                    function onImageUploadComplete(uploadedImageUrl,comment,docId) {
+                        // 画像URLをFirestoreの該当のドキュメントに追加する
+                        console.log('ユーザー名テスト',displayName);
+                        db.collection("features").doc(docId).update({
+                            画像: firebase.firestore.FieldValue.arrayUnion(uploadedImageUrl),
+                            コメント: firebase.firestore.FieldValue.arrayUnion(comment),
+                            ユーザー: firebase.firestore.FieldValue.arrayUnion(displayName)
+                        })
+                        .then(() => {
+                            // "success" "warning" "error" "info" の４種類のアイコンがある
+                            Swal.fire({
+                                type:"success",
+                                title: "写真を投稿しました",
+                                text:"ありがとう！これからも思い出つくろうね"
+                                });
+                        })
+                        .catch((error) => {
+                            console.error("画像URLの追加エラー: ", error);
+                        });
+                    }
+                    
+                    // // Get file information
+                    // const file = fileInput.files[0];
+                    // const fileName = file.name;
+                    // const fileSize = file.size;
+                    
+                    // // Get comment information
+                    // const comment = commentInput.value;
+
+
+                    
+                    // TODO: Perform actions with file and comment data (e.g., send to server)
+                    
+                    // Close the popup
+                    closePopup();
+                }
 
 
 
@@ -313,51 +399,34 @@ window.MikiBtnClick = (docId) => {
 
 };
 
-// 画像がアップロードされた後に呼び出されるコールバック関数
-function onImageUploadComplete(uploadedImageUrl,docId) {
-    // 画像URLをFirestoreの該当のドキュメントに追加する
-    db.collection("features").doc(docId).update({
-        画像: firebase.firestore.FieldValue.arrayUnion(uploadedImageUrl)
-    })
-    .then(() => {
-        // "success" "warning" "error" "info" の４種類のアイコンがある
-        Swal.fire({
-            type:"success",
-            title: "画像追加しました",
-            text:"ありがとう！これからも思い出つくろうね"
-            });
-    })
-    .catch((error) => {
-        console.error("画像URLの追加エラー: ", error);
-    });
-}
+
 
 // Create a root reference
-function previewFile(docId){
-    let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
-    let storageRef = firebase.storage().ref().child("img/" + AddImgName);
+// window.previewFile = (docId) => {
+//     let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
+//     let storageRef = firebase.storage().ref().child("img/" + AddImgName);
 
-     const Inputfile = document.getElementById('AddImg').files;
-    storageRef.put(Inputfile[0]).then((snapshot) => {
-        console.log('firebase storageにアップロード完了');
+//      const Inputfile = document.getElementById('AddImg').files;
+//     storageRef.put(Inputfile[0]).then((snapshot) => {
+//         console.log('firebase storageにアップロード完了');
 
-        // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
-        storageRef.getDownloadURL()
-            .then((url) => {
-                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-                imageUrl = url.replace(/^gs:\/\//, 'https://');
-                onImageUploadComplete(AddImgName,docId);
-                    // 画像を即座に表示する
-                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
-                    let labelElement = document.querySelector('label[for="AddImg"]');
-                    labelElement.insertAdjacentHTML('afterend', imgHTML);
-            })
-            .catch((error) => {
-                // エラー処理
-                console.error('ダウンロードURLの取得に失敗しました：', error);
-            });
-    });
-}
+//         // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
+//         storageRef.getDownloadURL()
+//             .then((url) => {
+//                 // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+//                 imageUrl = url.replace(/^gs:\/\//, 'https://');
+//                 onImageUploadComplete(AddImgName,docId);
+//                     // 画像を即座に表示する
+//                     let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img"></img>';
+//                     let labelElement = document.querySelector('label[for="AddImg"]');
+//                     labelElement.insertAdjacentHTML('afterend', imgHTML);
+//             })
+//             .catch((error) => {
+//                 // エラー処理
+//                 console.error('ダウンロードURLの取得に失敗しました：', error);
+//             });
+//     });
+// }
 
 // URLからクエリパラメーターを取得する関数
 function getParameterByName(name, url) {

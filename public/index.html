@@ -91,6 +91,19 @@
 
   <div id="map"></div>
   <script src="./src/config.js"></script>
+
+  <div id="popup">
+    <h2>木の写真をアップロードしよう！</h2>
+    <form id="uploadForm">
+      <label for="fileInput">写真の選択</label>
+      <input type="file" id="fileInput" required><br>
+      <label for="commentInput">コメント</label>
+      <input type="text" id="commentInput" required><br>
+      <p id="submitbutton"></p>
+      
+    </form>
+  </div>
+
   <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
     <!-- Dark background for the sheet -->
     <div class="overlay"></div> 
@@ -122,6 +135,8 @@
               </div>
             </div>
           
+
+
           <!-- HTMLコード -->
           <div class="toggle_button" id="toggle_button">
           </div>
