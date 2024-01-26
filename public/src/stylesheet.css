@@ -371,3 +371,12 @@ textarea:valid {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 999;
 }
+
+.tooltipClass{
+  background: rgba(0, 128, 0, 0);
+  border: none;
+  color:#297940;
+  font-weight:bold;
+  box-shadow: none;
+}
+

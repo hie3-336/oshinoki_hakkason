@@ -15,8 +15,9 @@ const profileLink = document.getElementById('profileLink');
 let isLoggedIn = false;
 
 // 変数の宣言
-let did = []
-let treeMarkers = []; let imageWidth = 90;
+let did = [] 
+let fg = new L.featureGroup();
+let imageWidth = 90;
 let now = new Date();
 let displayName;
 
@@ -79,26 +80,28 @@ checkLoginStatus();
 //Leafletの設定――――――――――――――――――――――――――――――――
 //ベースマップ
 let gsi = new L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png', {
-    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>"
+    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>",
+    maxZoom:18
 });
 let gsi_awai = new L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
-    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>"
+    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>",
+    maxZoom:18
 });
 let gsi_eisei = new L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {
-    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>"
+    attribution: "<a href='http://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>",
+    maxZoom:18
 });
 let osm = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&amp;copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom:22
+    maxZoom:20
 });
 
-/* mapboxaccessToken = 'pk.eyJ1IjoidXl1a3V5YSIsImEiOiJjbG5pZ3Q2NjIxcDFxMmttajZmb2E4OXR2In0.A624u6Z5MY-x50Oo06C0Wg';
+let mapboxaccessToken = 'pk.eyJ1IjoidXl1a3V5YSIsImEiOiJjbG5pZ3Q2NjIxcDFxMmttajZmb2E4OXR2In0.A624u6Z5MY-x50Oo06C0Wg';
 
-let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token=' + mapboxaccessToken, {
+let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' + mapboxaccessToken, {
     attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom:22
-}); */
-
+}); 
 
 //ベースマップ
 let baseLayers = {
@@ -106,27 +109,28 @@ let baseLayers = {
     "地理院地図 淡色": gsi_awai,
     "地理院地図 衛星画像": gsi_eisei,
     "OpenStreetMap 標準": osm,
-    //"mapbox":mapbox
+    "mapbox":mapbox
 };  
 
 //マップのオプションたち
 let mymap = L.map('map',{
     //杉並区の荻窪公園付近を初期位置に設定
     center:[35.697605, 139.619773],
-    zoom:15,
+    zoom:16,
     maxZoom:22,
-    minZoom:10,
+    minZoom:11,
     zoomControl:true,
-    layers:[osm],
+    layers:[mapbox],
+    preferCanvas:true,
 });
 
 //レイヤコントール追加
 L.control.layers(baseLayers).addTo(mymap);
 mymap.zoomControl.setPosition('bottomleft');
 
-  // 現在地表示プラグインーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+// 現在地表示プラグインーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 let lc = L.control.locate({
-    flyTo:true,
+    flyTo:false,
     strings: {
         title: "現在地を表示する",
     },
@@ -142,6 +146,7 @@ let lc = L.control.locate({
 
 //検索ボックス追加
 let searchLayer = new L.LayerGroup();
+let treeMarkers = true;
 mymap.addLayer(searchLayer);
 
 let controlSearch = new L.Control.Search({
@@ -156,44 +161,124 @@ mymap.addControl( controlSearch );
 
 readFirestoreTrees();
 
+//ポリゴンクリック時
+function polygonClicked(e){
+    mymap.flyTo(e.latlng, 15,{
+        animate: true,
+        duration: 1.5
+    });
+}
+
+function onEachFeature(feature, layer){
+    // 地物の名前を取り出す
+    let name = feature.properties.N03_004;
+    // ポップアップに名前を表示する
+    layer.bindTooltip(name,
+        {
+            permanent: true, direction:"center",
+            className: 'tooltipClass'
+        }
+    ).openTooltip();
+    layer.on({
+        click: polygonClicked
+    })
+}
+            
+//東京都GeoJson
+let geoJsonDatas = L.geoJSON(geoJsonData, {
+    style: function (feature) {
+        return {color: '#84C98B'};
+    },
+    onEachFeature: onEachFeature,
+})
+
+mymap.on('zoomend', function zoomFeatures(e) {
+    let ZmLev = mymap.getZoom();
+    if (ZmLev > 14) {
+        if(treeMarkers){
+            mymap.addLayer(fg);
+            mymap.removeLayer(geoJsonDatas);
+            treeMarkers=false;
+        }
+
+    }else if(ZmLev <= 14){
+        if(!treeMarkers){
+            mymap.removeLayer(fg);
+            mymap.addLayer(geoJsonDatas);
+            treeMarkers=true
+        }
+    }
+})
+
 //firebase使って樹木情報を表示
 function readFirestoreTrees(){
+    
     db.collection("features").get().then((querySnapshot) => {
        querySnapshot.forEach((doc) => {
            // doc.data() is never undefined for query doc snapshots
-           console.log(doc.id, " => ", doc.data());
+           //console.log(doc.id, " => ", doc.data());
            let dd = doc.data();
  
            did.push(doc.id);
            
-           let iconUrl;
+           //let iconUrl;
            let MigoroMark;
 
            if(dd.見頃.indexOf(now.getMonth()+1) !== -1) {
-            console.log('見頃です');
-            iconUrl = "./assets/icon_migoro.png";
+            //console.log('見頃です');
+            //iconUrl = "./assets/icon_migoro.png";
             MigoroMark = '<img src="./assets/icon/migoro.png" alt="見頃" width="40" height="20">';
            }else{
-            console.log('見頃ではありません');
-            iconUrl = "./assets/icon.png";
+            //console.log('見頃ではありません');
+            //iconUrl = "./assets/icon.png";
             MigoroMark = "";
            };
 
+           //let iconUrl;
+
            for (let i = 0; i < did.length; i++) {
-            let treeIcon = L.icon({
+/*             let treeIcon = L.icon({
                 iconUrl: iconUrl,
                 iconSize: [50,55],
                 iconAnchor: [25, 25]
+            }); */
+            let markerColor;
+            if(dd.見頃.includes(3)||dd.見頃.includes(4)||dd.見頃.includes(5)) {
+                markerColor = '#ff69b4';
+            }else if(dd.見頃.includes(6)||dd.見頃.includes(7)||dd.見頃.includes(8)){
+                markerColor = '#ffa500';
+            }else if(dd.見頃.includes(9)||dd.見頃.includes(10)||dd.見頃.includes(11)){
+                markerColor = '#cd853f';
+            }else{
+                markerColor = '#6495ed';
+            }
+            
+            let treeMarker = L.circleMarker(new L.LatLng(dd.位置.latitude, dd.位置.longitude),{
+                radius:dd.幹周*0.2,
+                color:markerColor,
+                opacity: 0.33
             });
-      
-            let treeMarker = L.marker([dd.位置.latitude, dd.位置.longitude], { icon: treeIcon, title: dd.公園名 });
-            treeMarkers.push(treeMarker);
-      
+
             treeMarker.on('click', () => {
                 setSheetHeight(Math.min(50, 720 / window.innerHeight * 100));
                 setIsSheetShown(true);
-      
-                document.getElementById("animalTitle").innerHTML = '<p><b><big>' + dd.あだ名 +'（'+ dd.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ dd.命名者 +'</p>';
+
+                let PickZmLev = mymap.getZoom();
+                //中心ずらし
+                if(PickZmLev<18){
+                    PickZmLev = 18;
+                    let markerLatLng = new L.LatLng(dd.位置.latitude, dd.位置.longitude);
+                    let point = mymap.latLngToContainerPoint(markerLatLng);
+                    let offsetPoint = L.point([point.x, point.y + 35]);
+                    let newMarkerLatLng = mymap.containerPointToLatLng(offsetPoint);
+                    //ズームレベル18より大きいときはそのまま（mapbox想定）               
+                    mymap.flyTo(newMarkerLatLng, PickZmLev,{
+                        animate: true,
+                        duration: 1.5,
+                        paddingTopLeft: [50, 0]
+                    });
+                };
+                document.getElementById("treeTitle").innerHTML = '<p><b><big>' + dd.あだ名 +'（'+ dd.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ dd.命名者 +'</p>';
 
                 const gsReferenceTop = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/'+dd.画像[0]);
                 let imageUrl = ''; // imageUrl 変数を外部スコープで宣言
@@ -205,7 +290,6 @@ function readFirestoreTrees(){
                     // 画像を表示するための処理もこのコールバック内で行う
                     let swiperHTML = '<img src="' + imageUrl + '" class="inline-block_topimg"></img><br>';
                     document.getElementById("imgSwiper").innerHTML = swiperHTML;
-
                   })
                   .catch((error) => {
                     // エラー処理
@@ -258,11 +342,7 @@ function readFirestoreTrees(){
                     .catch((error) => {
                         // エラー処理
                         console.error('ダウンロードURLの取得に失敗しました：', error);
-                    });
-
-
-
-                    
+                    });                    
                 }
                   
                 window.closeimagePopup = () => {
@@ -356,11 +436,8 @@ function readFirestoreTrees(){
                             console.error("画像URLの追加エラー: ", error);
                         });
                     }
-                    
                     closecommentPopup();
                 }
-
-
 
                 let TreeEra ="";
                 if(dd.樹齢<10){
@@ -379,9 +456,10 @@ function readFirestoreTrees(){
       
             });
             searchLayer.addLayer(treeMarker);
-
+            treeMarker.addTo(fg);
         }}); 
      });
+     fg.addTo(mymap);
  };
 
 window.MikiBtnClick = (docId) => {
