@@ -189,6 +189,8 @@ let geoJsonDatas = L.geoJSON(geoJsonData, {
     onEachFeature: onEachFeature,
 });
 
+let treeMarkers = false;
+
 mymap.on('zoomend', function zoomFeatures(e) {
     let ZmLev = mymap.getZoom();
     if (ZmLev > 14) {
