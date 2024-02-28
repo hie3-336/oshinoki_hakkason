@@ -84,9 +84,9 @@ let osm = new L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let mapboxaccessToken = 'pk.eyJ1IjoidXl1a3V5YSIsImEiOiJjbG5pZ3Q2NjIxcDFxMmttajZmb2E4OXR2In0.A624u6Z5MY-x50Oo06C0Wg';
 
-let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=' + mapboxaccessToken, {
-    attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom:22
+let mapbox = new L.tileLayer('https://api.mapbox.com/styles/v1/uyukuya/clt53vfx500dh01o85k5cf0dy/tiles/{z}/{x}/{y}?access_token=' + mapboxaccessToken, {
+    attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+    maxZoom:22,
 }); 
 
 //ベースマップ
@@ -148,19 +148,13 @@ const modalView = (DN) => {
 };
 
 //検索ボックス追加
-let searchLayer = new L.LayerGroup();
-let treeMarkers = true;
-mymap.addLayer(searchLayer);
-
-let controlSearch = new L.Control.Search({
-    position:'topleft',
-    layer: searchLayer,
-    initial: false,
-    zoom: 20,
-    marker: false,
-    collapsed:false
-});
-mymap.addControl( controlSearch );
+var option = {
+    position: 'topright', // topright, topleft, bottomright, bottomleft
+    text: '検索',
+    placeholder: '地名・住所を入力してください',
+  }
+  var osmGeocoder = new L.Control.OSMGeocoder(option);
+  mymap.addControl(osmGeocoder);
 
 readFirestoreTrees();
 
@@ -281,7 +275,13 @@ async function readFirestoreTrees(){
                             paddingTopLeft: [50, 0]
                         });
                     };
-                    document.getElementById("treeTitle").innerHTML = '<p><b><big>' + dd.あだ名 +'（'+ dd.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ dd.命名者 +'</p>';
+                    let adana;
+                    if(dd.あだ名!=""){
+                        adana=dd.あだ名;
+                    }else{
+                        adana="名前はまだないみたい";
+                    }
+                    document.getElementById("treeTitle").innerHTML = '<p><b><big>' + adana +'（'+ dd.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ dd.命名者 +'</p>';
 
                     const gsReferenceTop = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/'+dd.画像[0]);
                     let imageUrl = ''; // imageUrl 変数を外部スコープで宣言
