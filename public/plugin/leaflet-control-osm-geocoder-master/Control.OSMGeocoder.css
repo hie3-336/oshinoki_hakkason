@@ -1,0 +1,48 @@
+.leaflet-control-geocoder {
+    position: fixed;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 20px;
+    z-index: 1000;
+    width: 90%;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+
+.leaflet-control-geocoder form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.leaflet-control-geocoder input[type="text"] {
+    border: none;
+    padding: 0 10px;
+    height: 30px;
+    width: calc(100%); /* Adjust width considering padding and button */
+    background: transparent;
+    font-size: 16px;
+}
+
+.leaflet-control-geocoder input[type="submit"] {
+    display: none; /* Hide submit button and use the entire input field for triggering search */
+}
+
+.leaflet-control-geocoder a {
+    display: none; /* Hide toggle link if present */
+}
+
+/* Enhancements for loading and tooltip styles */
+.leaflet-control-geocoder.search-load .search-input {
+    background: url('../images/loader.gif') no-repeat center right rgba(255, 255, 255, 0.8);
+}
+
+.leaflet-control-geocoder .search-tooltip {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
