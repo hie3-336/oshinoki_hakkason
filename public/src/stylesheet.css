@@ -372,6 +372,78 @@ textarea:valid {
   z-index: 999;
 }
 
+/* 樹木画像ポップアップ関連 */
+
+.popup-wrapper {
+  width: 100vw; /*画面に大きさを合わせる*/
+  height: 100vh;
+  position: fixed; /*ラッパーの左上隅を画面左上に固定*/
+  z-index: 9999;
+  top: 0px;
+  left: 0px;
+  }
+  .popup-background{
+  width: 100%; /*ラッパー全体を覆うようにする*/
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /*半透明の黒*/
+  z-index: 9999;
+  }
+  .popup-body{
+  width: 50%; /*ラッパーの半分の大きさにする*/
+  height: 70%;
+  position: absolute; /*ラッパーを基準に、画面中央にくるように調整*/
+  top:25%;
+  left:25%;
+  background-color: white;
+  text-align: center;
+  z-index: 9999;
+  }
+
+  .imagespace{
+    position: relative;
+
+  }
+
+  .treeimage{
+    width: 80%;
+
+    height: 500px;
+ 
+    object-fit: contain;
+  }
+
+  .is-hidden{
+    visibility: hidden;
+  }
+
+
+
+
+.hidden {
+  display: none;
+}
+
+.buttons, #fileNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* ボタン間のスペース */
+}
+
+#fileNameContainer {
+  height: 20px; /* ファイル名表示領域の高さ。これが空白スペースとして機能します。 */
+}
+
+#comment {
+  margin-top: 10px;
+  width: 100%;
+  height: 100px;
+  border-radius: 2px;
+  background: #eaedf2;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 .tooltipClass{
   background: rgba(0, 128, 0, 0);
   border: none;

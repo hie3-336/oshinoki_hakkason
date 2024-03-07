@@ -102,13 +102,17 @@
       
     </form>
   </div>
-
-  <div id="commentpopup">
-    <h2>写真テスト</h2>
-    <p id="treeimage"></p>
-    <p id="treecomment"></p>
-    <button type="button" onclick="closeimagePopup()">閉じる</button>
-
+  <div class="popup-wrapper is-hidden">
+    <div class="popup-background" onclick="closeimagePopup()"></div>
+    <div class="popup-body">
+      <h2>写真テスト</h2>
+      <div class="imagespace">
+        <p id="treeimage"></p>
+      </div>
+      <p id="treecomment"></p>
+      
+      <button type="button" onclick="closeimagePopup()">閉じる</button>
+    </div>
   </div>
 
   <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
@@ -135,6 +139,21 @@
             <div id="swiper" class="swiper">
               <div id="imgSwiper">
               </div>
+              <hr class="marT">
+
+              <div class="buttons">
+                <button id="postCancelBtn" class="btn">投稿する</button>
+                <button id="imageBtn" class="hidden btn">画像</button>
+                <input type="file" id="imageInput" class="hidden" accept="image/*">
+                <button id="submitBtn" class="hidden btn">▶</button>
+              </div>
+              <div id="fileNameContainer" class="hidden">
+                  <span id="fileName"></span>
+              </div>
+              <div class="commentSection hidden">
+                  <textarea id="comment" placeholder="コメントを入力..."></textarea>
+              </div>
+
               <hr class="marT">
               <p><b>投稿写真</b></p>
               <div id="addimg">

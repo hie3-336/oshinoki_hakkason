@@ -329,8 +329,11 @@ async function readFirestoreTrees(){
                     
                     //画像・コメント表示ポップアップ関連
                     window.openimagePopup = (num)  => {
-                        const popup = document.getElementById('commentpopup');
-                        popup.style.display = 'block';
+                        // const popup = document.getElementById('commentpopup');
+                        // popup.style.display = 'block';
+                        var open = document.getElementsByClassName("popup-wrapper"); /*クラス名"popup-wrapper"のオブジェクトの配列を取得*/
+                        open[0].classList.remove("is-hidden"); /* 最初のオブジェクトが持つCSSクラス("popup-wrapper is-hidden")から"is-hidden"取り除く*/
+
                         console.log('dd画像テスト',dd.画像[num])
                         const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + dd.画像[num]);
 
@@ -339,7 +342,7 @@ async function readFirestoreTrees(){
                         .then((url) => {
                             // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
                             imageUrl = url.replace(/^gs:\/\//, 'https://');
-                            document.getElementById("treeimage").innerHTML ='<img src="' + imageUrl + '"></img> ' ;
+                            document.getElementById("treeimage").innerHTML ='<img class="treeimage" src="' + imageUrl + '"></img> ' ;
                             document.getElementById("treecomment").innerHTML = dd.ユーザーコメント[num];
                         })
                         .catch((error) => {
@@ -349,9 +352,96 @@ async function readFirestoreTrees(){
                     }
                     
                     window.closeimagePopup = () => {
-                        const popup = document.getElementById('commentpopup');
-                        popup.style.display = 'none';
+                        var open = document.getElementsByClassName("popup-wrapper");
+                        open[0].classList.add("is-hidden"); /* CSSクラス"is-hidden"を付け足す*/
+                        // const popup = document.getElementById('commentpopup');
+                        // popup.style.display = 'none';
                     }
+
+
+                    const postCancelBtn = document.getElementById('postCancelBtn');
+                    const imageBtn = document.getElementById('imageBtn');
+                    const imageInput = document.getElementById('imageInput');
+                    const fileName = document.getElementById('fileName');
+                    const fileNameContainer = document.getElementById('fileNameContainer');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const commentSection = document.querySelector('.commentSection');
+                
+                    postCancelBtn.addEventListener('click', function() {
+                        if (postCancelBtn.textContent === '投稿する') {
+                            postCancelBtn.textContent = 'キャンセル';
+                            imageBtn.classList.remove('hidden');
+                            submitBtn.classList.remove('hidden');
+                            commentSection.classList.remove('hidden');
+                            fileNameContainer.classList.remove('hidden'); // 常に空白スペースを表示
+                        } else {
+                            resetForm();
+                        }
+                    });
+                
+                    imageBtn.addEventListener('click', function() {
+                        imageInput.click();
+                    });
+                
+                    imageInput.addEventListener('change', function() {
+                        if (imageInput.files.length > 0) {
+                            fileName.textContent = imageInput.files[0].name;
+                            fileNameContainer.classList.remove('hidden');
+                        } else {
+                            fileName.textContent = ''; // ファイルが選択されていない場合はファイル名をクリア
+                        }
+                    });
+                
+                    submitBtn.addEventListener('click', function() {
+                        if (comment.value.trim() === '' || !imageInput.files.length) {
+                            alert('コメントと画像を入力してください。');
+                            return;
+                        }
+                        const fileInput = document.getElementById('imageInput');
+                        const commentInput = document.getElementById('comment');
+                        
+                        let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
+                        let storageRef = firebase.storage().ref().child("img/" + AddImgName);
+                    
+                        //コメント情報読み込み
+                        let commenttext = commentInput.value;
+                        
+                        storageRef.put(fileInput.files[0]).then((snapshot) => {
+                            console.log('firebase storageにアップロード完了');
+                    
+                            // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
+                            storageRef.getDownloadURL()
+                                .then((url) => {
+                                    // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+                                    imageUrl = url.replace(/^gs:\/\//, 'https://');
+                                    onImageUploadComplete(AddImgName,commenttext,doc.id);
+                                        // 画像を即座に表示する
+                                        console.log('TestImg:',ImgNum)
+                                        let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
+                                        let labelElement = document.querySelector('label[for="AddImg"]');
+                                        labelElement.insertAdjacentHTML('afterend', imgHTML);
+                                })
+                                .catch((error) => {
+                                    // エラー処理
+                                    console.error('ダウンロードURLの取得に失敗しました：', error);
+                                });
+                        });
+                        resetForm();
+                        setIsSheetShown(false);
+                        
+                    });
+                
+                    function resetForm() {
+                        postCancelBtn.textContent = '投稿する';
+                        imageBtn.classList.add('hidden');
+                        submitBtn.classList.add('hidden');
+                        commentSection.classList.add('hidden');
+                        fileName.textContent = '';
+                        fileNameContainer.classList.add('hidden'); // ファイル名と空白スペースを非表示
+                        imageInput.value = '';
+                    }
+
+                    
 
 
                     // すべてのPromiseが解決された後に画像をHTMLに追加する
