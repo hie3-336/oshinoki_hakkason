@@ -43,7 +43,7 @@ auth.onAuthStateChanged((user) => {
       }
     } else {
       console.log('ユーザーがログインしていません');
-      displayName = '[未ログイン]'
+      displayName = 'ゲスト'
       modalView(displayName);
     }
 });
@@ -306,8 +306,8 @@ async function readFirestoreTrees(){
                 let promises = [];
                 let ImgNum = dd.画像.length;
                 let lastImg = 0;
-                if(ImgNum>=3){
-                    lastImg = ImgNum - 3;
+                if(ImgNum>=8){
+                    lastImg = ImgNum - 8;
                 };
 
                 for (let j = ImgNum - 1; j >= lastImg; j--) {
@@ -371,17 +371,22 @@ async function readFirestoreTrees(){
                 let commentform = "close";
             
                 postCancelBtn.onclick = () => {
-                    if (commentform === "close") {
-                        commentform = "open";
-                        console.log("あ");
-                        postCancelBtn.textContent = 'キャンセル';
-                        imageBtn.classList.remove('hidden');
-                        submitBtn.classList.remove('hidden');
-                        commentSection.classList.remove('hidden');
-                        fileNameContainer.classList.remove('hidden'); // 常に空白スペースを表示
-                    } else if (commentform === "open") {
-                        console.log("い");
-                        resetForm();
+                    if (isLoggedIn) {
+                        if (commentform === "close") {
+                            commentform = "open";
+                            console.log("あ");
+                            postCancelBtn.textContent = 'キャンセル';
+                            imageBtn.classList.remove('hidden');
+                            submitBtn.classList.remove('hidden');
+                            commentSection.classList.remove('hidden');
+                            fileNameContainer.classList.remove('hidden'); // 常に空白スペースを表示
+                        } else if (commentform === "open") {
+                            console.log("い");
+                            resetForm();
+                        }
+                    } else {
+                        alert('画像の投稿を行うためには、右上のアイコンからログインしてください。');
+                        return;
                     }
                 };
             
@@ -456,63 +461,11 @@ async function readFirestoreTrees(){
                     .then((images) => {
                         addimgHTML = images.join(''); // すべての画像を連結
 
-                        document.getElementById("addimg").innerHTML = '<input type="button" onclick="opencommentPopup()" id="AddImg"><label for="AddImg" class="AddImgBtn" >+</label>' + addimgHTML;
+                        document.getElementById("addimg").innerHTML = addimgHTML;
                         // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
                 });
 
-
-                //コメント投稿ポップアップ関連
-                window.opencommentPopup = ()  => {
-                    const popup = document.getElementById('popup');
-                    popup.style.display = 'block';
-                }
                 
-                window.closecommentPopup = () => {
-                    const popup = document.getElementById('popup');
-                    popup.style.display = 'none';
-                }
-
-                //画像投稿のポップアップのHTMLを作成
-                document.getElementById("submitbutton").innerHTML = '<button type="button" onclick="submitForm(\'' + doc.id + '\')">投稿</button>'
-                
-                window.submitForm = (docId) => {
-                    const fileInput = document.getElementById('fileInput');
-                    const commentInput = document.getElementById('commentInput');
-                    
-                    // Check if both file and comment are provided
-                    if (fileInput.files.length === 0 || commentInput.value.trim() === '') {
-                        alert('写真の選択とコメントの入力をしてください。');
-                        return;
-                    }
-                    let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
-                    let storageRef = firebase.storage().ref().child("img/" + AddImgName);
-                
-                    //コメント情報読み込み
-                    let commenttext = commentInput.value;
-                    
-                    storageRef.put(fileInput.files[0]).then((snapshot) => {
-                        console.log('firebase storageにアップロード完了');
-                
-                        // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
-                        storageRef.getDownloadURL()
-                            .then((url) => {
-                                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-                                imageUrl = url.replace(/^gs:\/\//, 'https://');
-                                onImageUploadComplete(AddImgName,commenttext,docId);
-                                    // 画像を即座に表示する
-                                    console.log('TestImg:',ImgNum)
-                                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
-                                    let labelElement = document.querySelector('label[for="AddImg"]');
-                                    labelElement.insertAdjacentHTML('afterend', imgHTML);
-                            })
-                            .catch((error) => {
-                                // エラー処理
-                                console.error('ダウンロードURLの取得に失敗しました：', error);
-                            });
-                    });
-                    closecommentPopup();
-                }
-
                 let TreeEra ="";
                 if(dd.樹齢<10){
                     TreeEra="あかちゃん"
