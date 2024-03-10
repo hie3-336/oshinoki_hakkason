@@ -109,13 +109,15 @@
   <div class="popup-wrapper is-hidden">
     <div class="popup-background" onclick="closeimagePopup()"></div>
     <div class="popup-body">
-      <h2>写真テスト</h2>
+      <span id="square_btn" onclick="closeimagePopup()"></span>
       <div class="imagespace">
-        <p id="treeimage"></p>
+        <div class="imageflame">
+          <div id="treeimage"></div>
+          <div id="treecomment"></div>
+
+        </div>
       </div>
-      <p id="treecomment"></p>
-      
-      <button type="button" onclick="closeimagePopup()">閉じる</button>
+
     </div>
   </div>
 

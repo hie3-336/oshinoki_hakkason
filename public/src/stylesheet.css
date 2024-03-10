@@ -377,42 +377,98 @@ textarea:valid {
   z-index: 9999;
   top: 0px;
   left: 0px;
-  }
-  .popup-background{
+}
+.popup-background{
   width: 100%; /*ラッパー全体を覆うようにする*/
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /*半透明の黒*/
   z-index: 9999;
-  }
-  .popup-body{
-  width: 50%; /*ラッパーの半分の大きさにする*/
+}
+.popup-body{
+  width: 90%; /*ラッパーの半分の大きさにする*/
   height: 70%;
+  max-width: 600px;
+
   position: absolute; /*ラッパーを基準に、画面中央にくるように調整*/
-  top:25%;
-  left:25%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+
   background-color: white;
   text-align: center;
   z-index: 9999;
-  }
+}
 
   .imagespace{
     position: relative;
+    
+    
+    width: 90%;
+    height: 90%;
+
+    
+    margin: 0 auto;
+  }
+  .imageflame{
+
+    object-fit: contain;
+    position: absolute;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
 
   }
 
+  #treeimage{
+    height : 80%;
+  }
   .treeimage{
-    width: 80%;
 
-    height: 500px;
- 
+    max-width:80%;
+    height: 100%;
+    margin: 0 auto; 
     object-fit: contain;
+  }
+  #treecomment{
+    text-align: center;
   }
 
   .is-hidden{
     visibility: hidden;
   }
 
-
+  #square_btn {
+    display: block;
+    margin-left: auto;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #333; /* 枠の調整 */
+    background: #fff; /* ボタンの背景色 */
+  }
+   
+  #square_btn::before, #square_btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px; /* 棒の幅（太さ） */
+    height: 27px; /* 棒の高さ */
+    background: #333; /* バツ印の色 */
+  }
+   
+  #square_btn::before {
+    transform: translate(-50%,-50%) rotate(45deg);
+  }
+   
+  #square_btn::after {
+    transform: translate(-50%,-50%) rotate(-45deg);
+  }
 
 
 .hidden {
