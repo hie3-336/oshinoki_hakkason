@@ -149,15 +149,21 @@
 
               <div class="buttons">
                 <button id="postCancelBtn" class="btn">投稿する</button>
-                <button id="imageBtn" class="hidden btn">画像</button>
-                <input type="file" id="imageInput" class="hidden" accept="image/*">
-                <button id="submitBtn" class="hidden btn">▶</button>
-              </div>
-              <div id="fileNameContainer" class="hidden">
-                  <span id="fileName"></span>
               </div>
               <div class="commentSection hidden">
                   <textarea id="comment" placeholder="コメントを入力..."></textarea>
+              </div>
+
+
+              <div class="buttons">
+                <!-- <button id="imageBtn" class="hidden btn">画像</button> -->
+                <img id="imageBtn" class="imageicon" src="./assets/icon/image.svg" alt="" >
+                <input type="file" id="imageInput" class="hidden" accept="image/*">
+                <!-- <button id="submitBtn" class="hidden btn">▶</button> -->
+                <p id="fileNameContainer" class="hidden">
+                  <span id="fileName"></span>
+                </p>
+                <img id="submitBtn" class="sendicon" src="./assets/icon/send.svg" alt="" >
               </div>
 
               <hr class="marT">

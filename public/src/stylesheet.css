@@ -88,7 +88,7 @@ header {
 .btn {  
   color: #000;
   background-color: #f6fff7;
-  border-color: #98fb98;
+  border-color: #548235;
   border-width: 3px;
   margin-left: 5px;
   font-size: medium;
@@ -342,6 +342,7 @@ textarea:valid {
   background-color: #fff;
 }
 
+
 #popup {
   display: none;
   position: fixed;
@@ -478,8 +479,8 @@ textarea:valid {
 .buttons, #fileNameContainer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px; /* ボタン間のスペース */
+  justify-content: flex-start;
+
 }
 
 #fileNameContainer {
@@ -504,3 +505,13 @@ textarea:valid {
   box-shadow: none;
 }
 
+.imageicon {
+  margin-left: 20px;
+  margin-right: 20px;
+  height: 30px;
+}
+
+.sendicon {
+  margin-left: auto;
+  height: 30px;
+}

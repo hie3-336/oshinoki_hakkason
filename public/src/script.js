@@ -339,6 +339,7 @@ async function readFirestoreTrees(){
                     open[0].classList.remove("is-hidden"); /* 最初のオブジェクトが持つCSSクラス("popup-wrapper is-hidden")から"is-hidden"取り除く*/
 
                     console.log('dd画像テスト',dd.画像[num])
+
                     const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + dd.画像[num]);
 
                     // ダウンロードURLを非同期で取得し、Promiseを返す
