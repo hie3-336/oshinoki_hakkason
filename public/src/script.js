@@ -253,9 +253,9 @@ async function readFirestoreTrees(){
             }
             
             let treeMarker = L.circleMarker(new L.LatLng(dd.位置.latitude, dd.位置.longitude),{
-                radius:dd.幹周*0.2,
+                radius:dd.幹周*0.5,
                 color:markerColor,
-                opacity: 0.33
+                opacity: 0.43
             });
             console.log("お");
 
