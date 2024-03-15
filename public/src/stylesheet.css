@@ -59,7 +59,6 @@ header {
 }
 
 .leaflet-container {
-  /*background-image: url(../assets/back.jpg);*/
   outline: 0;
 }
 
@@ -89,8 +88,9 @@ header {
   color: #000;
   background-color: #f6fff7;
   border-color: #548235;
-  border-width: 3px;
+  border-width: 2px;
   margin-left: 5px;
+  padding: 0px 2px;
   font-size: medium;
   }
 
@@ -166,24 +166,24 @@ header {
   margin: 30px 0;
   display:flex;
   justify-content: flex-start;
-  align-items: flex-start; /*縦位置を上揃え*/
-/*   align-items: center; */ /*縦位置を真ん中揃え*/
+  align-items: flex-start; 
+
 }
 .faceicon img{
-  width: 80px; /*任意のサイズ*/
+  width: 80px; 
   height: auto;
 }
 .balloon_l .faceicon{
   margin-right:25px;
 }
 .says {
-  max-width:500px; /*最大幅は任意*/
+  max-width:500px; 
   display: flex;
   flex-wrap: wrap;
   position: relative;
   padding: 17px 13px 15px 18px;
   border-radius: 12px;
-  background: #98fb98;/*色は任意*/
+  background: #98fb98;
   box-sizing:border-box;
   margin:0 !important;
   line-height:1.5;
@@ -255,7 +255,6 @@ textarea:required {
 input[type=email]:valid,
 input[type=password]:valid,
 textarea:valid {
-  margin-bottom: 0.75em;
   width: 100%;
   border-color: #b9b9b9;
 	background-color: #fff;
@@ -404,12 +403,8 @@ textarea:valid {
 
   .imagespace{
     position: relative;
-    
-    
     width: 90%;
     height: 90%;
-
-    
     margin: 0 auto;
   }
   .imageflame{
@@ -478,7 +473,6 @@ textarea:valid {
 
 .buttons, #fileNameContainer {
   display: flex;
-  align-items: center;
   justify-content: flex-start;
 
 }
@@ -505,13 +499,23 @@ textarea:valid {
   box-shadow: none;
 }
 
+.helpicon {
+  margin-left: 10px;
+  height: 13px;
+}
+
 .imageicon {
-  margin-left: 20px;
   margin-right: 20px;
   height: 30px;
 }
 
 .sendicon {
   margin-left: auto;
+  margin-bottom: 20px;
   height: 30px;
+}
+
+.checkbox {
+  font-size: medium;
+  font-weight: bold;
 }

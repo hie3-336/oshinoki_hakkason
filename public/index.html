@@ -122,22 +122,16 @@
   </div>
 
   <div id="sheet" class="sheet" aria-hidden="true" role="dialog">
-    <!-- Dark background for the sheet -->
     <div class="overlay"></div> 
-
-    <!-- The sheet itself -->
     <div class="contents">
-      <!-- Sheet controls -->
       <header class="controls">
-        <!-- The thing to drag if you want to resize the sheet -->
         <div class="draggable-area">
           <div class="draggable-thumb"></div>
         </div>
-        <!-- Button to close the sheet -->
         <button class="close-sheet" type="button" title="Close the sheet">&times;</button>
       </header>
       
-      <!-- Body of the sheet -->
+
       <main class="body">
 
         <article>
@@ -151,15 +145,17 @@
                 <button id="postCancelBtn" class="btn">投稿する</button>
               </div>
               <div class="commentSection hidden">
-                  <textarea id="comment" placeholder="コメントを入力..."></textarea>
+                <textarea id="comment" placeholder="木についてコメントしてね"></textarea>
               </div>
-
-
+              <p class="checkbox">
+                <input id="checkbox" class="checkbox01" type="checkbox" name="" value="">木の調子が悪いかも
+                <img id="helpBtn" class="helpicon" src="./assets/icon/help.svg" onclick="openimagePopup(-1)" alt="" >
+              </p>
               <div class="buttons">
-                <!-- <button id="imageBtn" class="hidden btn">画像</button> -->
+
                 <img id="imageBtn" class="imageicon" src="./assets/icon/image.svg" alt="" >
                 <input type="file" id="imageInput" class="hidden" accept="image/*">
-                <!-- <button id="submitBtn" class="hidden btn">▶</button> -->
+
                 <p id="fileNameContainer" class="hidden">
                   <span id="fileName"></span>
                 </p>
@@ -173,7 +169,6 @@
               </div>
             </div>
         
-          <!-- HTMLコード -->
           <div class="toggle_button" id="toggle_button">
           </div>
           <hr class="marT">
@@ -183,8 +178,7 @@
       </main>
     </div>
   </div>
-  <!-- Button to open a sheet 
-  <button type="button" id="open-sheet" aria-controls="sheet">Open Sheet</button>-->
+
   <script type="module" src="./src/script.js">
 
 

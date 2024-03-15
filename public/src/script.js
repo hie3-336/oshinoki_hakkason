@@ -337,10 +337,15 @@ async function readFirestoreTrees(){
                     // popup.style.display = 'block';
                     var open = document.getElementsByClassName("popup-wrapper"); /*クラス名"popup-wrapper"のオブジェクトの配列を取得*/
                     open[0].classList.remove("is-hidden"); /* 最初のオブジェクトが持つCSSクラス("popup-wrapper is-hidden")から"is-hidden"取り除く*/
+                    var urlid = dd.画像[num];
 
-                    console.log('dd画像テスト',dd.画像[num])
-
-                    const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + dd.画像[num]);
+                    //不調木のチュートリアル時のみ、専用画像を表示させる処理
+                    //※悪手。　リファクタリングの余地あり
+                    if (num == -1){
+                        urlid = 'tutorial.png';
+                    }
+                    console.log(urlid);
+                    const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + urlid);
 
                     // ダウンロードURLを非同期で取得し、Promiseを返す
                     gsReferencePopup.getDownloadURL()
@@ -348,7 +353,12 @@ async function readFirestoreTrees(){
                         // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
                         imageUrl = url.replace(/^gs:\/\//, 'https://');
                         document.getElementById("treeimage").innerHTML ='<img class="treeimage" src="' + imageUrl + '"></img> ' ;
-                        document.getElementById("treecomment").innerHTML = dd.ユーザーコメント[num];
+                        var usercomment = dd.ユーザーコメント[num];
+                        console.log(usercomment);
+                        if (usercomment === undefined){
+                            usercomment = '';
+                        }
+                        document.getElementById("treecomment").innerHTML = usercomment;
                     })
                     .catch((error) => {
                         // エラー処理
@@ -371,6 +381,7 @@ async function readFirestoreTrees(){
                 const fileNameContainer = document.getElementById('fileNameContainer');
                 const submitBtn = document.getElementById('submitBtn');
                 const commentSection = document.querySelector('.commentSection');
+                const checkbox = document.querySelector('.checkbox');
                 let commentform = "close";
             
                 postCancelBtn.onclick = () => {
@@ -382,7 +393,8 @@ async function readFirestoreTrees(){
                             imageBtn.classList.remove('hidden');
                             submitBtn.classList.remove('hidden');
                             commentSection.classList.remove('hidden');
-                            fileNameContainer.classList.remove('hidden'); // 常に空白スペースを表示
+                            fileNameContainer.classList.remove('hidden');
+                            checkbox.classList.remove('hidden');
                         } else if (commentform === "open") {
                             console.log("い");
                             resetForm();
@@ -451,7 +463,8 @@ async function readFirestoreTrees(){
                     submitBtn.classList.add('hidden');
                     commentSection.classList.add('hidden');
                     fileName.textContent = '';
-                    fileNameContainer.classList.add('hidden'); // ファイル名と空白スペースを非表示
+                    fileNameContainer.classList.add('hidden');
+                    checkbox.classList.add('hidden');
                     imageInput.value = '';
                     commentform = "close"
                 }
