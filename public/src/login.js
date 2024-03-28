@@ -22,15 +22,13 @@ const handleSignUp = async () => {
             });
         })
         .then(() => {
-            console.log('User profile updated with displayName:', userName);
             window.alert('登録完了しました');
             window.location.href = 'login.html';
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log("errorCode", errorCode);
-            console.log("errorMessage", errorMessage);
+
             // エラー処理
             console.error('Error creating user:', error);
             document.getElementById("error-message").textContent = ErrorPopupSignup(errorCode);
@@ -45,8 +43,6 @@ const handleSignIn = async () => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            console.log("user", user);
-            console.log("user.emailVerified", user.emailVerified);
             const userName = user.displayName;
             window.alert(`ようこそ${userName}さん！`)
             const userId = user.uid;
@@ -56,8 +52,7 @@ const handleSignIn = async () => {
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
-            console.log("errorCode", errorCode);
-            console.log("errorMessage", errorMessage);
+
 
             document.getElementById("error-message").textContent = ErrorPopupSignin(errorCode);
             // window.alert(ErrorPopup(errorCode));
@@ -95,7 +90,7 @@ if(resetPasswordForm != null){
         sendPasswordResetEmail(auth, email)
         .then(() => {
             // メールの送信に成功した場合の処理
-            console.log('Password reset email sent successfully!');
+
             // リセット用のリンクなど、ユーザーに通知するための処理を追加
             // 例: リセット用のリンクを表示するなど
             window.alert('再設定メールを送信しました。パスワードを再設定後、ログインしてください');

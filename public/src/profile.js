@@ -14,7 +14,7 @@ const HomeLink = document.getElementById('homelink');
 
 // index.htmlのURLからuser_idのクエリパラメーターを取得する
 const userId = getParameterByName('user_id');
-console.log(userId);
+
 // ユーザー情報を取得
 auth.onAuthStateChanged((user) => {
     if (user) {
@@ -22,8 +22,7 @@ auth.onAuthStateChanged((user) => {
         // ユーザーがログインしており、対象のユーザーIDにマッチした場合
         displayName = user.displayName;
         email = user.email;
-        console.log('DisplayName:', displayName);
-        console.log(user)
+
         // ログイン状態を確認
         ProfileName.value = displayName;
         ProfileEmail.value = email;
@@ -31,10 +30,10 @@ auth.onAuthStateChanged((user) => {
         let HomeMyUrl = `index.html?user_id=${userId}`;
         HomeLink.setAttribute('href',HomeMyUrl);
       } else {
-        console.log('指定されたユーザーIDのユーザーが見つかりません');
+
       }
     } else {
-      console.log('ユーザーがログインしていません');
+
     }
 });
 

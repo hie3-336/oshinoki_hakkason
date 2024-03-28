@@ -32,17 +32,16 @@ auth.onAuthStateChanged((user) => {
       if (user.uid === userId) {
         // ユーザーがログインしており、対象のユーザーIDにマッチした場合
         displayName = user.displayName;
-        console.log('DisplayName:', displayName);
         // displayNameを使って必要な処理を行う
         isLoggedIn = true;
         // ログイン状態を確認
         checkLoginStatus();
         modalView(displayName);
       } else {
-        console.log('指定されたユーザーIDのユーザーが見つかりません');
+
       }
     } else {
-      console.log('ユーザーがログインしていません');
+
       displayName = 'ゲスト'
       modalView(displayName);
     }
@@ -132,6 +131,7 @@ let lc = L.control.locate({
 
 //モーダルプラグイン
 const modalView = (DN) => {
+
     let options = {
         title:'<big><b>ふぁぼツリー(デモ版)</b></big>',
         content:'<h3>ようこそ'+ DN +'さん</h3><h3><u>はじめに</u></h3><p>推しの樹木と出会えるふぁぼツリーというサービスです！（※東京都オープンデータハッカソン用デモサイト）</p><h3><u>使い方</u></h3><p>①このダイアログを読み終えたら右下の<b>OKボタンを押してください</b>。<br>②位置情報許可のポップアップが表示されるので、許可すると現在地まで移動します。<br><h3><u>各ボタンの説明</u></h3><p><img src="./assets/layers.png">　背景地図を選ぶ<br><img src="./assets/location-arrow.png">　現在地の表示・非表示</p><p style="text-align:right;"><h3><u>注意事項</u></h3><p>●現在デモ版のため、杉並区井荻駅前の樹木をサンプルとして登録しております。また樹高や樹齢、幹周のデータは実際の計測とは異なります。</p>',
@@ -142,7 +142,7 @@ const modalView = (DN) => {
     let win =  L.control.window(mymap, options)
     .prompt({callback:function(){
         //OKボタンを押したら初期から現在地を探す
-        lc.start()
+        // lc.start()
         }
     }).show()
 };
@@ -218,7 +218,7 @@ async function readFirestoreTrees(){
         fg.clearLayers();
         querySnapshot.forEach((doc) => {
            // doc.data() is never undefined for query doc snapshots
-           console.log(doc.id, " => ", doc.data());
+
            let dd = doc.data();
            
            //let iconUrl;
@@ -257,10 +257,10 @@ async function readFirestoreTrees(){
                 color:markerColor,
                 opacity: 0.43
             });
-            console.log("お");
+
 
             treeMarker.on('click', () => {
-                console.log("え");
+
                 setSheetHeight(Math.min(50, 720 / window.innerHeight * 100));
                 setIsSheetShown(true);
 
@@ -301,6 +301,8 @@ async function readFirestoreTrees(){
                 .catch((error) => {
                     // エラー処理
                     console.error('ダウンロードURLの取得に失敗しました：', error);
+                    let swiperHTML = '<img src=" " class="inline-block_topimg"></img><br>';
+                    document.getElementById("imgSwiper").innerHTML = swiperHTML;
                 });      
 
                 //複数画像の表示
@@ -344,7 +346,7 @@ async function readFirestoreTrees(){
                     if (num == -1){
                         urlid = 'tutorial.png';
                     }
-                    console.log(urlid);
+
                     const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + urlid);
 
                     // ダウンロードURLを非同期で取得し、Promiseを返す
@@ -354,7 +356,7 @@ async function readFirestoreTrees(){
                         imageUrl = url.replace(/^gs:\/\//, 'https://');
                         document.getElementById("treeimage").innerHTML ='<img class="treeimage" src="' + imageUrl + '"></img> ' ;
                         var usercomment = dd.ユーザーコメント[num];
-                        console.log(usercomment);
+
                         if (usercomment === undefined){
                             usercomment = '';
                         }
@@ -388,7 +390,7 @@ async function readFirestoreTrees(){
                     if (isLoggedIn) {
                         if (commentform === "close") {
                             commentform = "open";
-                            console.log("あ");
+
                             postCancelBtn.textContent = 'キャンセル';
                             imageBtn.classList.remove('hidden');
                             submitBtn.classList.remove('hidden');
@@ -396,7 +398,7 @@ async function readFirestoreTrees(){
                             fileNameContainer.classList.remove('hidden');
                             checkbox.classList.remove('hidden');
                         } else if (commentform === "open") {
-                            console.log("い");
+
                             resetForm();
                         }
                     } else {
@@ -433,7 +435,7 @@ async function readFirestoreTrees(){
                     let commenttext = commentInput.value;
                     
                     storageRef.put(fileInput.files[0]).then((snapshot) => {
-                        console.log('firebase storageにアップロード完了');
+                     
                 
                         // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
                         storageRef.getDownloadURL()
@@ -442,7 +444,7 @@ async function readFirestoreTrees(){
                                 imageUrl = url.replace(/^gs:\/\//, 'https://');
                                 onImageUploadComplete(AddImgName,commenttext,doc.id);
                                     // 画像を即座に表示する
-                                    console.log('TestImg:',ImgNum)
+
                                     let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
                                     let labelElement = document.querySelector('label[for="AddImg"]');
                                     labelElement.insertAdjacentHTML('afterend', imgHTML);
@@ -496,13 +498,13 @@ async function readFirestoreTrees(){
                 let bestsee = dd.見頃.join("月,");
     
                 document.getElementById("treeExplain").innerHTML = '<p>幹周：<span id="mikisyu">'+dd.幹周+'ｃｍ</span><input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick(\'' + doc.id + '\');"/></p><p>樹高：'+dd.樹高+'ｍ</p><p>樹齢：'+ dd.樹齢 + '才（' +TreeEra +'）</p><p>性格：'+ dd.性格 + '</p><p>見頃：'+ bestsee + '月</p><hr class="marT"><p><b>ひとこと：</b></p><div class="balloon_l"><div class="faceicon"><img src="./assets/icon/tree_chara.png" alt="" ></div><p class="says">'+dd.コメント+'</p></div>'
-                console.log("か");
+
                 resetForm();
             });
             fg.addLayer(treeMarker);
             
         }); 
-        console.log(fg);
+
     });
 };
 mymap.addLayer(fg);
@@ -510,7 +512,7 @@ mymap.addLayer(fg);
 // 画像がアップロードされた後に呼び出されるコールバック関数
 async function onImageUploadComplete(uploadedImageUrl,comment,docId) {
     // 画像URLをFirestoreの該当のドキュメントに追加する
-    console.log('ユーザー名テスト',displayName);
+
     let imgRef = doc(db,"features",docId);
     await updateDoc(imgRef,{
         画像: arrayUnion(uploadedImageUrl),
@@ -531,7 +533,7 @@ async function onImageUploadComplete(uploadedImageUrl,comment,docId) {
 };
 
 window.MikiBtnClick = (docId) => {
-    console.log("う");
+
     Swal.fire({
         title: "幹周を入力してください",
         text: "※数値のみ",
