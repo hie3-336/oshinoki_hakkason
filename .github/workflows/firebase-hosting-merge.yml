@@ -6,11 +6,26 @@ on:
   push:
     branches:
       - main
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create config.js
+        run: |
+          mkdir -p public/src
+          echo "const firebaseConfig = {" >> public/src/config.js
+          echo "  apiKey: '${{ secrets.FIREBASE_API_KEY }}'," >> public/src/config.js
+          echo "  authDomain: '${{ secrets.FIREBASE_AUTH_DOMAIN }}'," >> public/src/config.js
+          echo "  projectId: '${{ secrets.FIREBASE_PROJECT_ID }}'," >> public/src/config.js
+          echo "  storageBucket: '${{ secrets.FIREBASE_STORAGE_BUCKET }}'," >> public/src/config.js
+          echo "  messagingSenderId: '${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}'," >> public/src/config.js
+          echo "  appId: '${{ secrets.FIREBASE_APP_ID }}'," >> public/src/config.js
+          echo "  measurementId: '${{ secrets.FIREBASE_MEASUREMENT_ID }}'" >> public/src/config.js
+          echo "};" >> public/src/config.js
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
