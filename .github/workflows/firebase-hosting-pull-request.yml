@@ -25,6 +25,8 @@ jobs:
           echo "  appId: '${{ secrets.FIREBASE_APP_ID }}'," >> public/src/config.js
           echo "  measurementId: '${{ secrets.FIREBASE_MEASUREMENT_ID }}'" >> public/src/config.js
           echo "};" >> public/src/config.js
+          echo "" >> public/src/config.js
+          echo "const app = firebase.initializeApp(firebaseConfig);" >> public/src/config.js
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
