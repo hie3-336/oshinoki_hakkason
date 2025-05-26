@@ -221,18 +221,6 @@ async function readFirestoreTrees(){
 
            let dd = doc.data();
            
-           //let iconUrl;
-           let MigoroMark;
-
-           if(dd.見頃.indexOf(now.getMonth()+1) !== -1) {
-            //console.log('見頃です');
-            //iconUrl = "./assets/icon_migoro.png";
-            MigoroMark = '<img src="./assets/icon/migoro.png" alt="見頃" width="40" height="20">';
-           }else{
-            //console.log('見頃ではありません');
-            //iconUrl = "./assets/icon.png";
-            MigoroMark = "";
-           };
 
            //let iconUrl;
 
@@ -299,6 +287,20 @@ function showTreeDetails(treeData, docId) {
     }else{
         adana="名前はまだないみたい";
     }
+
+    // ★見頃マーク
+    //let iconUrl;
+    let MigoroMark;
+
+    if(treeData.見頃.indexOf(now.getMonth()+1) !== -1) {
+        //console.log('見頃です');
+        //iconUrl = "./assets/icon_migoro.png";
+        MigoroMark = '<img src="./assets/icon/migoro.png" alt="見頃" width="40" height="20">';
+    } else {
+        //console.log('見頃ではありません');
+        //iconUrl = "./assets/icon.png";
+        MigoroMark = "";
+    };
 
     // ★HTML差し込み
     document.getElementById("treeTitle").innerHTML = '<p><b><big>' + adana +'（'+ treeData.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ treeData.命名者 +'</p>';
