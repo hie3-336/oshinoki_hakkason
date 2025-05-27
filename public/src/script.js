@@ -305,51 +305,7 @@ function showTreeDetails(treeData, docId) {
     // ★HTML差し込み
     document.getElementById("treeTitle").innerHTML = '<p><b><big>' + adana +'（'+ treeData.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ treeData.命名者 +'</p>';
 
-    // ★firebase Storageから画像取得・差し込み
-    const gsReferenceTop = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/'+treeData.画像[0]);
-    let imageUrl = ''; // imageUrl 変数を外部スコープで宣言
-    gsReferenceTop.getDownloadURL()
-    .then((url) => {
-        // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-        imageUrl = url.replace(/^gs:\/\//, 'https://');
-        // 画像を表示するための処理もこのコールバック内で行う
-        let swiperHTML = '<img src="' + imageUrl + '" class="inline-block_topimg"></img><br>';
-        document.getElementById("imgSwiper").innerHTML = swiperHTML;
-    })
-    .catch((error) => {
-        // エラー処理
-        console.error('ダウンロードURLの取得に失敗しました：', error);
-        let swiperHTML = '<img src=" " class="inline-block_topimg"></img><br>';
-        document.getElementById("imgSwiper").innerHTML = swiperHTML;
-    });      
-
-    //複数画像の表示
-    let addimgHTML = "";
-    let promises = [];
-    let ImgNum = treeData.画像.length;
-    let lastImg = 0;
-    if(ImgNum>=8){
-        lastImg = ImgNum - 8;
-    };
-
-    for (let j = ImgNum - 1; j >= lastImg; j--) {
-        let gsReferenceMulti = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + treeData.画像[j]);
-
-        // ダウンロードURLを非同期で取得し、Promiseを返す
-        let promise = gsReferenceMulti.getDownloadURL()
-            .then((url) => {
-                // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-                imageUrl = url.replace(/^gs:\/\//, 'https://');
-                return '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + j + ')"></img>';
-            })
-            .catch((error) => {
-                // エラー処理
-                console.error('ダウンロードURLの取得に失敗しました：', error);
-                return ''; // エラーの場合は空の文字列を返す
-            });
-        
-        promises.push(promise);
-    }
+    const ImgNum = renderTreeImages(treeData);
 
     // ★コメント投稿UIの設定
     const postCancelBtn = document.getElementById('postCancelBtn');
@@ -418,13 +374,14 @@ function showTreeDetails(treeData, docId) {
             storageRef.getDownloadURL()
                 .then((url) => {
                     // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+                    let imageUrl = '';
                     imageUrl = url.replace(/^gs:\/\//, 'https://');
-                    onImageUploadComplete(AddImgName,commenttext,doc.id);
-                        // 画像を即座に表示する
+                    onImageUploadComplete(AddImgName,commenttext,docId);
+                    // 画像を即座に表示する
 
-                        let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
-                        let labelElement = document.querySelector('label[for="AddImg"]');
-                        labelElement.insertAdjacentHTML('afterend', imgHTML);
+                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
+                    document.getElementById('addimg').insertAdjacentHTML('beforeend', imgHTML);
+
                 })
                 .catch((error) => {
                     // エラー処理
@@ -456,6 +413,7 @@ function showTreeDetails(treeData, docId) {
         gsReferencePopup.getDownloadURL()
         .then((url) => {
             // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
+            let imageUrl = '';
             imageUrl = url.replace(/^gs:\/\//, 'https://');
             document.getElementById("treeimage").innerHTML ='<img class="treeimage" src="' + imageUrl + '"></img> ' ;
             var usercomment = treeData.ユーザーコメント[num];
@@ -492,13 +450,14 @@ function showTreeDetails(treeData, docId) {
     }
 
     // すべてのPromiseが解決された後に画像をHTMLに追加する
-    Promise.all(promises)
-        .then((images) => {
-            addimgHTML = images.join(''); // すべての画像を連結
+    // Promise.all(promises)
+    //     .then((images) => {
+    //         let addimgHTML = "";
+    //         addimgHTML = images.join(''); // すべての画像を連結
 
-            document.getElementById("addimg").innerHTML = addimgHTML;
-            // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
-    });
+    //         document.getElementById("addimg").innerHTML = addimgHTML;
+    //         // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
+    // });
 
     
     let TreeEra ="";
@@ -514,10 +473,57 @@ function showTreeDetails(treeData, docId) {
 
     let bestsee = treeData.見頃.join("月,");
 
-    document.getElementById("treeExplain").innerHTML = '<p>幹周：<span id="mikisyu">'+treeData.幹周+'ｃｍ</span><input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick(\'' + doc.id + '\');"/></p><p>樹高：'+treeData.樹高+'ｍ</p><p>樹齢：'+ treeData.樹齢 + '才（' +TreeEra +'）</p><p>性格：'+ treeData.性格 + '</p><p>見頃：'+ bestsee + '月</p><hr class="marT"><p><b>ひとこと：</b></p><div class="balloon_l"><div class="faceicon"><img src="./assets/icon/tree_chara.png" alt="" ></div><p class="says">'+treeData.コメント+'</p></div>'
+    document.getElementById("treeExplain").innerHTML = '<p>幹周：<span id="mikisyu">'+treeData.幹周+'ｃｍ</span><input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick(\'' + docId + '\');"/></p><p>樹高：'+treeData.樹高+'ｍ</p><p>樹齢：'+ treeData.樹齢 + '才（' +TreeEra +'）</p><p>性格：'+ treeData.性格 + '</p><p>見頃：'+ bestsee + '月</p><hr class="marT"><p><b>ひとこと：</b></p><div class="balloon_l"><div class="faceicon"><img src="./assets/icon/tree_chara.png" alt="" ></div><p class="says">'+treeData.コメント+'</p></div>'
 
     resetForm();
 }
+
+// 樹木画像を表示させる処理
+function renderTreeImages(treeData) {
+    const topImageRef = storage.refFromURL(`gs://oshinoki-7a262.appspot.com/img/${treeData.画像[0]}`);
+    const imgSwiperEl = document.getElementById("imgSwiper");
+    const addImgEl = document.getElementById("addimg");
+
+    const ImgNum = treeData.画像.length;
+  
+    // トップ画像表示
+    topImageRef.getDownloadURL()
+        .then((url) => {
+            const topImageUrl = url.replace(/^gs:\/\//, 'https://');
+            const swiperHTML = `<img src="${topImageUrl}" class="inline-block_topimg"><br>`;
+            imgSwiperEl.innerHTML = swiperHTML;
+        })
+        .catch((error) => {
+            console.error('トップ画像の取得失敗：', error);
+            imgSwiperEl.innerHTML = `<img src="" class="inline-block_topimg"><br>`;
+        });
+  
+    // サムネイル画像たち（最大8件）を取得
+    const promises = [];
+    const startIdx = Math.max(0, ImgNum - 8); // 直近8件
+
+    for (let j = ImgNum - 1; j >= startIdx; j--) {
+        const ref = storage.refFromURL(`gs://oshinoki-7a262.appspot.com/img/${treeData.画像[j]}`);
+        const promise = ref.getDownloadURL()
+            .then((url) => {
+                const thumbUrl = url.replace(/^gs:\/\//, 'https://');
+                return `<img src="${thumbUrl}" class="inline-block_img" onclick="openimagePopup(${j})">`;
+            })
+            .catch((error) => {
+                console.error('サムネイル画像取得失敗：', error);
+                return ''; // 表示しない
+            });
+  
+        promises.push(promise);
+    }
+  
+    Promise.all(promises).then((htmlArray) => {
+        addImgEl.innerHTML = htmlArray.join('');
+    });
+
+    return ImgNum;
+}
+
 
 // 画像がアップロードされた後に呼び出されるコールバック関数
 async function onImageUploadComplete(uploadedImageUrl,comment,docId) {
