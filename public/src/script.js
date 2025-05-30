@@ -10,8 +10,8 @@ const storage = firebase.storage();
 const db = getFirestore(app);
 
 // 変数の宣言
+const now = new Date();
 let imageWidth = 90;
-let now = new Date();
 let displayName;
 let loadCount = 0;
 
@@ -305,161 +305,11 @@ function showTreeDetails(treeData, docId) {
     // ★HTML差し込み
     document.getElementById("treeTitle").innerHTML = '<p><b><big>' + adana +'（'+ treeData.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ treeData.命名者 +'</p>';
 
+    // 画像表示処理
     const ImgNum = renderTreeImages(treeData);
+    // コメント投稿処理
+    setupCommentForm(docId, ImgNum, isLoggedIn, displayName);
 
-    // ★コメント投稿UIの設定
-    const postCancelBtn = document.getElementById('postCancelBtn');
-    const imageBtn = document.getElementById('imageBtn');
-    const imageInput = document.getElementById('imageInput');
-    const fileName = document.getElementById('fileName');
-    const fileNameContainer = document.getElementById('fileNameContainer');
-    const submitBtn = document.getElementById('submitBtn');
-    const commentSection = document.querySelector('.commentSection');
-    const checkbox = document.querySelector('.checkbox');
-    let commentform = "close";
-
-    // ★コメント投稿時の処理
-    postCancelBtn.onclick = () => {
-        if (isLoggedIn) {
-            if (commentform === "close") {
-                commentform = "open";
-
-                postCancelBtn.textContent = 'キャンセル';
-                imageBtn.classList.remove('hidden');
-                submitBtn.classList.remove('hidden');
-                commentSection.classList.remove('hidden');
-                fileNameContainer.classList.remove('hidden');
-                checkbox.classList.remove('hidden');
-            } else if (commentform === "open") {
-
-                resetForm();
-            }
-        } else {
-            alert('画像の投稿を行うためには、右上のアイコンからログインしてください。');
-            return;
-        }
-    };
-
-    imageBtn.onclick = () => {
-        imageInput.click();
-    };
-
-    imageInput.addEventListener('change', () => {
-        if (imageInput.files.length > 0) {
-            fileName.textContent = imageInput.files[0].name;
-            fileNameContainer.classList.remove('hidden');
-        } else {
-            fileName.textContent = ''; // ファイルが選択されていない場合はファイル名をクリア
-        }
-      });
-
-    submitBtn.onclick = () => {
-        if (comment.value.trim() === '' || !imageInput.files.length) {
-            alert('コメントと画像を入力してください。');
-            return;
-        }
-        const fileInput = document.getElementById('imageInput');
-        const commentInput = document.getElementById('comment');
-        
-        let AddImgName = String(now.getFullYear()) + String(now.getMonth() + 1) + String(now.getDate()) + String(now.getHours()) + String(now.getMinutes()) + String(now.getSeconds());
-        let storageRef = firebase.storage().ref().child("img/" + AddImgName);
-    
-        //コメント情報読み込み
-        let commenttext = commentInput.value;
-        
-        storageRef.put(fileInput.files[0]).then((snapshot) => {
-         
-    
-            // 画像がアップロードされたら、ダウンロードURLを取得してコールバック関数に渡す
-            storageRef.getDownloadURL()
-                .then((url) => {
-                    // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-                    let imageUrl = '';
-                    imageUrl = url.replace(/^gs:\/\//, 'https://');
-                    onImageUploadComplete(AddImgName,commenttext,docId);
-                    // 画像を即座に表示する
-
-                    let imgHTML = '<img src="' + imageUrl + '" class="inline-block_img" onclick="openimagePopup(' + ImgNum + ')"></img>';
-                    document.getElementById('addimg').insertAdjacentHTML('beforeend', imgHTML);
-
-                })
-                .catch((error) => {
-                    // エラー処理
-                    console.error('ダウンロードURLの取得に失敗しました：', error);
-                });
-        });
-        resetForm();
-        setIsSheetShown(false);
-        
-    };
-
-    //★モーダル内の画像クリック時のポップアップ処理
-    window.openimagePopup = (num)  => {
-        // const popup = document.getElementById('commentpopup');
-        // popup.style.display = 'block';
-        var open = document.getElementsByClassName("popup-wrapper"); /*クラス名"popup-wrapper"のオブジェクトの配列を取得*/
-        open[0].classList.remove("is-hidden"); /* 最初のオブジェクトが持つCSSクラス("popup-wrapper is-hidden")から"is-hidden"取り除く*/
-        var urlid = treeData.画像[num];
-
-        //不調木のチュートリアル時のみ、専用画像を表示させる処理
-        //※悪手。　リファクタリングの余地あり
-        if (num == -1){
-            urlid = 'tutorial.png';
-        }
-
-        const gsReferencePopup = storage.refFromURL('gs://oshinoki-7a262.appspot.com/img/' + urlid);
-
-        // ダウンロードURLを非同期で取得し、Promiseを返す
-        gsReferencePopup.getDownloadURL()
-        .then((url) => {
-            // 取得したダウンロードURLをhttpsに変換して imageUrl に代入
-            let imageUrl = '';
-            imageUrl = url.replace(/^gs:\/\//, 'https://');
-            document.getElementById("treeimage").innerHTML ='<img class="treeimage" src="' + imageUrl + '"></img> ' ;
-            var usercomment = treeData.ユーザーコメント[num];
-
-            if (usercomment === undefined){
-                usercomment = '';
-            }
-            document.getElementById("treecomment").innerHTML = usercomment;
-        })
-        .catch((error) => {
-            // エラー処理
-            console.error('ダウンロードURLの取得に失敗しました：', error);
-        });                    
-    }
-        
-    window.closeimagePopup = () => {
-        var open = document.getElementsByClassName("popup-wrapper");
-        open[0].classList.add("is-hidden"); /* CSSクラス"is-hidden"を付け足す*/
-        // const popup = document.getElementById('commentpopup');
-        // popup.style.display = 'none';
-    }
-
-    // ★フォームのリセット処理
-    function resetForm() {
-        postCancelBtn.textContent = '投稿する';
-        imageBtn.classList.add('hidden');
-        submitBtn.classList.add('hidden');
-        commentSection.classList.add('hidden');
-        fileName.textContent = '';
-        fileNameContainer.classList.add('hidden');
-        checkbox.classList.add('hidden');
-        imageInput.value = '';
-        commentform = "close"
-    }
-
-    // すべてのPromiseが解決された後に画像をHTMLに追加する
-    // Promise.all(promises)
-    //     .then((images) => {
-    //         let addimgHTML = "";
-    //         addimgHTML = images.join(''); // すべての画像を連結
-
-    //         document.getElementById("addimg").innerHTML = addimgHTML;
-    //         // <input type="file" accept="image/*" id="AddImg" onchange="previewFile(\'' + doc.id + '\');" hidden/> ← <label for…の前に書いてあった記述内容
-    // });
-
-    
     let TreeEra ="";
     if(treeData.樹齢<10){
         TreeEra="あかちゃん"
@@ -475,7 +325,6 @@ function showTreeDetails(treeData, docId) {
 
     document.getElementById("treeExplain").innerHTML = '<p>幹周：<span id="mikisyu">'+treeData.幹周+'ｃｍ</span><input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick(\'' + docId + '\');"/></p><p>樹高：'+treeData.樹高+'ｍ</p><p>樹齢：'+ treeData.樹齢 + '才（' +TreeEra +'）</p><p>性格：'+ treeData.性格 + '</p><p>見頃：'+ bestsee + '月</p><hr class="marT"><p><b>ひとこと：</b></p><div class="balloon_l"><div class="faceicon"><img src="./assets/icon/tree_chara.png" alt="" ></div><p class="says">'+treeData.コメント+'</p></div>'
 
-    resetForm();
 }
 
 // 樹木画像を表示させる処理
@@ -524,29 +373,114 @@ function renderTreeImages(treeData) {
     return ImgNum;
 }
 
+function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
+    const postCancelBtn = document.getElementById('postCancelBtn');
+    const imageBtn = document.getElementById('imageBtn');
+    const imageInput = document.getElementById('imageInput');
+    const fileName = document.getElementById('fileName');
+    const fileNameContainer = document.getElementById('fileNameContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const commentSection = document.querySelector('.commentSection');
+    const checkbox = document.querySelector('.checkbox');
+    const commentInput = document.getElementById('comment');
+    let commentFormState = "close";
+  
+    // 投稿UIトグル
+    postCancelBtn.onclick = () => {
+        if (!isLoggedIn) {
+            alert('画像を投稿するにはログインが必要です。右上のアイコンからログインしてね！');
+            return;
+        }
+  
+        const shouldOpen = commentFormState === "close";
+        commentFormState = shouldOpen ? "open" : "close";
 
-// 画像がアップロードされた後に呼び出されるコールバック関数
-async function onImageUploadComplete(uploadedImageUrl,comment,docId) {
-    // 画像URLをFirestoreの該当のドキュメントに追加する
-
-    let imgRef = doc(db,"features",docId);
-    await updateDoc(imgRef,{
-        画像: arrayUnion(uploadedImageUrl),
-        ユーザーコメント: arrayUnion(comment),
-        ユーザー: arrayUnion(displayName)
-    })
-    .then(() => {
-        // "success" "warning" "error" "info" の４種類のアイコンがある
-        Swal.fire({
-            type:"success",
-            title: "写真を投稿しました",
-            text:"ありがとう！これからも思い出つくろうね"
-            });
-    })
-    .catch((error) => {
-        console.error("画像URLの追加エラー: ", error);
+        postCancelBtn.textContent = shouldOpen ? 'キャンセル' : '投稿する';
+        imageBtn.classList.toggle('hidden', !shouldOpen);
+        submitBtn.classList.toggle('hidden', !shouldOpen);
+        commentSection.classList.toggle('hidden', !shouldOpen);
+        fileNameContainer.classList.toggle('hidden', !shouldOpen);
+        checkbox.classList.toggle('hidden', !shouldOpen);
+  
+        if (!shouldOpen) resetForm();
+    };
+  
+    // ファイル選択
+    imageBtn.onclick = () => {
+        imageInput.click();
+    };
+  
+    imageInput.addEventListener('change', () => {
+        if (imageInput.files.length > 0) {
+            fileName.textContent = imageInput.files[0].name;
+            fileNameContainer.classList.remove('hidden');
+        } else {
+            fileName.textContent = '';
+        }
     });
-};
+  
+    // 送信処理
+    submitBtn.onclick = () => {
+        if (commentInput.value.trim() === '' || !imageInput.files.length) {
+            alert('コメントと画像を入力してください🙌');
+            return;
+        }
+  
+        const AddImgName = `${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+        const storageRef = firebase.storage().ref().child("img/" + AddImgName);
+        const commentText = commentInput.value;
+  
+        storageRef.put(imageInput.files[0]).then(() => {
+            return storageRef.getDownloadURL();
+        }).then((url) => {
+            const imageUrl = url.replace(/^gs:\/\//, 'https://');
+  
+            // Firestoreに反映
+            return updateDoc(doc(db, "features", docId), {
+                画像: arrayUnion(AddImgName),
+                ユーザーコメント: arrayUnion(commentText),
+                ユーザー: arrayUnion(displayName)
+            }).then(() => {
+                // 投稿完了UI
+                Swal.fire({
+                    icon: "success",
+                    title: "写真を投稿しました！",
+                    text: "ありがとう！これからも思い出つくろうね"
+                });
+    
+                const addImgEl = document.getElementById('addimg');
+                const currentImages = addImgEl.querySelectorAll('img').length;
+                const imgHTML = `<img src="${imageUrl}" class="inline-block_img" onclick="openimagePopup(${currentImages})">`;
+                addImgEl.insertAdjacentHTML('beforeend', imgHTML);
+    
+                resetForm();
+                setIsSheetShown(false);
+            });
+        }).catch((error) => {
+            console.error("投稿エラー：", error);
+            Swal.fire({
+                icon: "error",
+                title: "投稿に失敗しました",
+                text: "通信状況を確認してね"
+            });
+        });
+    };
+  
+    function resetForm() {
+        postCancelBtn.textContent = '投稿する';
+        imageBtn.classList.add('hidden');
+        submitBtn.classList.add('hidden');
+        commentSection.classList.add('hidden');
+        fileName.textContent = '';
+        fileNameContainer.classList.add('hidden');
+        checkbox.classList.add('hidden');
+        imageInput.value = '';
+        commentFormState = "close";
+        commentInput.value = '';
+    }
+}
+
+
 
 window.MikiBtnClick = (docId) => {
 
