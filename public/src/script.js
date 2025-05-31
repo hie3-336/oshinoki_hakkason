@@ -422,12 +422,32 @@ function toggleCommentFormUI(commentFormState, isLoggedIn) {
     return shouldOpen ? "open" : "close";
 }
 
-function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
-    const postCancelBtn = document.getElementById('postCancelBtn');
+// 画像投稿処理
+function setupImageInputHandler() {
     const imageBtn = document.getElementById('imageBtn');
     const imageInput = document.getElementById('imageInput');
     const fileName = document.getElementById('fileName');
     const fileNameContainer = document.getElementById('fileNameContainer');
+
+    // ファイル選択ボタンが押されたら input をトリガー
+    imageBtn.onclick = () => {
+        imageInput.click();
+    };
+
+    // ファイル選択されたときの処理
+    imageInput.addEventListener('change', () => {
+        if (imageInput.files.length > 0) {
+            fileName.textContent = imageInput.files[0].name;
+            fileNameContainer.classList.remove('hidden');
+        } else {
+            fileName.textContent = '';
+            fileNameContainer.classList.add('hidden');
+        }
+    });
+}
+
+function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
+    const postCancelBtn = document.getElementById('postCancelBtn');
     const submitBtn = document.getElementById('submitBtn');
     const commentSection = document.querySelector('.commentSection');
     const checkbox = document.querySelector('.checkbox');
@@ -439,24 +459,13 @@ function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
         commentFormState = toggleCommentFormUI(commentFormState, isLoggedIn);
     };
   
-    // ファイル選択
-    imageBtn.onclick = () => {
-        imageInput.click();
-    };
-  
-    imageInput.addEventListener('change', () => {
-        if (imageInput.files.length > 0) {
-            fileName.textContent = imageInput.files[0].name;
-            fileNameContainer.classList.remove('hidden');
-        } else {
-            fileName.textContent = '';
-        }
-    });
+    // 画像投稿処理
+    setupImageInputHandler();
   
     // 送信処理
     submitBtn.onclick = () => {
         if (commentInput.value.trim() === '' || !imageInput.files.length) {
-            alert('コメントと画像を入力してください🙌');
+            alert('コメントと画像を入力してください');
             return;
         }
   
