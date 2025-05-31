@@ -279,37 +279,42 @@ function flyToTree(treeData) {
     }
 }
 
+// タイトル部分描画処理
+
+function renderTreeOverviewHTML(treeData, docId) {
+    // あだ名チェック
+    const adana = treeData.あだ名 && treeData.あだ名.trim() !== ""
+        ? treeData.あだ名
+        : "名前はまだないみたい";
+
+    // 見頃マーク
+    const isMigoro = treeData.見頃.includes(now.getMonth() + 1);
+    const MigoroMark = isMigoro
+        ? '<img src="./assets/icon/migoro.png" alt="見頃" width="40" height="20">'
+        : "";
+
+    // タイトルHTMLを作成して差し込み
+    const titleHTML = `
+        <p>
+            <b><big>${adana}（${treeData.樹種名}）</big></b>
+            ${MigoroMark}
+        </p>
+        <p>命名：@${treeData.命名者}</p>
+    `;
+
+    document.getElementById("treeTitle").innerHTML = titleHTML;
+}
+
+
 function showTreeDetails(treeData, docId) {
     setSheetHeight(Math.min(50, 720 / window.innerHeight * 100));
     setIsSheetShown(true);
 
     // ★ズーム処理
     flyToTree(treeData);
-    
-    // ★あだ名チェック
-    let adana;
-    if(treeData.あだ名!=""){
-        adana=treeData.あだ名;
-    }else{
-        adana="名前はまだないみたい";
-    }
 
-    // ★見頃マーク
-    //let iconUrl;
-    let MigoroMark;
-
-    if(treeData.見頃.indexOf(now.getMonth()+1) !== -1) {
-        //console.log('見頃です');
-        //iconUrl = "./assets/icon_migoro.png";
-        MigoroMark = '<img src="./assets/icon/migoro.png" alt="見頃" width="40" height="20">';
-    } else {
-        //console.log('見頃ではありません');
-        //iconUrl = "./assets/icon.png";
-        MigoroMark = "";
-    };
-
-    // ★HTML差し込み
-    document.getElementById("treeTitle").innerHTML = '<p><b><big>' + adana +'（'+ treeData.樹種名 +'）</big></b>' + MigoroMark + '</p><p>命名：@'+ treeData.命名者 +'</p>';
+    // タイトル部分描画処理
+    renderTreeOverviewHTML(treeData, docId);
 
     // 画像表示処理
     const ImgNum = renderTreeImages(treeData);
