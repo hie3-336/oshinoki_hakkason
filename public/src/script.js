@@ -280,7 +280,6 @@ function flyToTree(treeData) {
 }
 
 // タイトル部分描画処理
-
 function renderTreeOverviewHTML(treeData, docId) {
     // あだ名チェック
     const adana = treeData.あだ名 && treeData.あだ名.trim() !== ""
@@ -305,6 +304,37 @@ function renderTreeOverviewHTML(treeData, docId) {
     document.getElementById("treeTitle").innerHTML = titleHTML;
 }
 
+// 樹木情報描画処理
+function renderTreeDetailsHTML(treeData, docId) {
+    const TreeEra = treeData.樹齢 < 10
+        ? "あかちゃん"
+        : treeData.樹齢 < 20
+            ? "こども"
+            : treeData.樹齢 < 40
+                ? "おとな"
+                : "おじいちゃん";
+
+    const detailHTML = `
+        <p>幹周：<span id="mikisyu">${treeData.幹周}ｃｍ</span>
+            <input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick('${docId}');"/>
+        </p>
+        <p>樹高：${treeData.樹高}ｍ</p>
+        <p>樹齢：${treeData.樹齢}才（${TreeEra}）</p>
+        <p>性格：${treeData.性格}</p>
+        <p>見頃：${treeData.見頃}月</p>
+        <hr class="marT">
+        <p><b>ひとこと：</b></p>
+        <div class="balloon_l">
+            <div class="faceicon">
+                <img src="./assets/icon/tree_chara.png" alt="">
+            </div>
+            <p class="says">${treeData.コメント}</p>
+        </div>
+    `;
+
+    document.getElementById("treeExplain").innerHTML = detailHTML;
+}
+
 
 function showTreeDetails(treeData, docId) {
     setSheetHeight(Math.min(50, 720 / window.innerHeight * 100));
@@ -316,25 +346,14 @@ function showTreeDetails(treeData, docId) {
     // タイトル部分描画処理
     renderTreeOverviewHTML(treeData, docId);
 
+    // 樹木情報描画処理
+    renderTreeDetailsHTML(treeData, docId);
+
     // 画像表示処理
     const ImgNum = renderTreeImages(treeData);
+    
     // コメント投稿処理
     setupCommentForm(docId, ImgNum, isLoggedIn, displayName);
-
-    let TreeEra ="";
-    if(treeData.樹齢<10){
-        TreeEra="あかちゃん"
-    }else if(treeData.樹齢<20){
-        TreeEra="こども"
-    }else if(treeData.樹齢<40){
-        TreeEra="おとな"
-    }else{
-        TreeEra="おじいちゃん"
-    }
-
-    let bestsee = treeData.見頃.join("月,");
-
-    document.getElementById("treeExplain").innerHTML = '<p>幹周：<span id="mikisyu">'+treeData.幹周+'ｃｍ</span><input type="button" class="btn" value="　はかる　" onclick="MikiBtnClick(\'' + docId + '\');"/></p><p>樹高：'+treeData.樹高+'ｍ</p><p>樹齢：'+ treeData.樹齢 + '才（' +TreeEra +'）</p><p>性格：'+ treeData.性格 + '</p><p>見頃：'+ bestsee + '月</p><hr class="marT"><p><b>ひとこと：</b></p><div class="balloon_l"><div class="faceicon"><img src="./assets/icon/tree_chara.png" alt="" ></div><p class="says">'+treeData.コメント+'</p></div>'
 
 }
 
@@ -384,6 +403,25 @@ function renderTreeImages(treeData) {
     return ImgNum;
 }
 
+// コメント投稿トグルを表示する処理
+function toggleCommentFormUI(commentFormState, isLoggedIn) {
+    if (!isLoggedIn) {
+        alert('画像を投稿するにはログインが必要です。右上のアイコンからログインしてね！');
+        return commentFormState;
+    }
+
+    const shouldOpen = commentFormState === "close";
+    document.getElementById('postCancelBtn').textContent = shouldOpen ? 'キャンセル' : '投稿する';
+    document.getElementById('imageBtn').classList.toggle('hidden', !shouldOpen);
+    document.getElementById('submitBtn').classList.toggle('hidden', !shouldOpen);
+    document.querySelector('.commentSection').classList.toggle('hidden', !shouldOpen);
+    document.getElementById('fileNameContainer').classList.toggle('hidden', !shouldOpen);
+    document.querySelector('.checkbox').classList.toggle('hidden', !shouldOpen);
+
+    if (!shouldOpen) resetForm();
+    return shouldOpen ? "open" : "close";
+}
+
 function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
     const postCancelBtn = document.getElementById('postCancelBtn');
     const imageBtn = document.getElementById('imageBtn');
@@ -396,24 +434,9 @@ function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
     const commentInput = document.getElementById('comment');
     let commentFormState = "close";
   
-    // 投稿UIトグル
     postCancelBtn.onclick = () => {
-        if (!isLoggedIn) {
-            alert('画像を投稿するにはログインが必要です。右上のアイコンからログインしてね！');
-            return;
-        }
-  
-        const shouldOpen = commentFormState === "close";
-        commentFormState = shouldOpen ? "open" : "close";
-
-        postCancelBtn.textContent = shouldOpen ? 'キャンセル' : '投稿する';
-        imageBtn.classList.toggle('hidden', !shouldOpen);
-        submitBtn.classList.toggle('hidden', !shouldOpen);
-        commentSection.classList.toggle('hidden', !shouldOpen);
-        fileNameContainer.classList.toggle('hidden', !shouldOpen);
-        checkbox.classList.toggle('hidden', !shouldOpen);
-  
-        if (!shouldOpen) resetForm();
+        // コメント投稿トグルを表示する処理
+        commentFormState = toggleCommentFormUI(commentFormState, isLoggedIn);
     };
   
     // ファイル選択
