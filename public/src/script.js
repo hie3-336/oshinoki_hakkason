@@ -259,27 +259,33 @@ async function readFirestoreTrees(){
 };
 mymap.addLayer(fg);
 
+// モーダル表示時のズーム処理
+function flyToTree(treeData) {
+    const currentZoom = mymap.getZoom();
+    const targetZoom = 18;
+    const offsetY = 35;
+
+    if (currentZoom < targetZoom) {
+        const markerLatLng = new L.LatLng(treeData.位置.latitude, treeData.位置.longitude);
+        const screenPoint = mymap.latLngToContainerPoint(markerLatLng);
+        const offsetPoint = L.point(screenPoint.x, screenPoint.y + offsetY); // 少し下にずらす
+        const adjustedLatLng = mymap.containerPointToLatLng(offsetPoint);
+
+        mymap.flyTo(adjustedLatLng, targetZoom, {
+            animate: true,
+            duration: 1.5,
+            paddingTopLeft: [50, 0]
+        });
+    }
+}
+
 function showTreeDetails(treeData, docId) {
     setSheetHeight(Math.min(50, 720 / window.innerHeight * 100));
     setIsSheetShown(true);
 
     // ★ズーム処理
-    let PickZmLev = mymap.getZoom();
-    //中心ずらし
-    if(PickZmLev<18){
-        PickZmLev = 18;
-        let markerLatLng = new L.LatLng(treeData.位置.latitude, treeData.位置.longitude);
-        let point = mymap.latLngToContainerPoint(markerLatLng);
-        let offsetPoint = L.point([point.x, point.y + 35]);
-        let newMarkerLatLng = mymap.containerPointToLatLng(offsetPoint);
-        //ズームレベル18より大きいときはそのまま（mapbox想定）               
-        mymap.flyTo(newMarkerLatLng, PickZmLev,{
-            animate: true,
-            duration: 1.5,
-            paddingTopLeft: [50, 0]
-        });
-    };
-
+    flyToTree(treeData);
+    
     // ★あだ名チェック
     let adana;
     if(treeData.あだ名!=""){
