@@ -353,7 +353,7 @@ function showTreeDetails(treeData, docId) {
     const ImgNum = renderTreeImages(treeData);
     
     // コメント投稿処理
-    setupCommentForm(docId, ImgNum, isLoggedIn, displayName);
+    setupCommentForm(treeData, docId, ImgNum, isLoggedIn, displayName);
 
 }
 
@@ -376,6 +376,50 @@ function renderTreeImages(treeData) {
             console.error('トップ画像の取得失敗：', error);
             imgSwiperEl.innerHTML = `<img src="" class="inline-block_topimg"><br>`;
         });
+    
+    // Firebase画像URLを取得するユーティリティ関数
+    function getImageUrlFromStorage(imageId) {
+        const gsUrl = `gs://oshinoki-7a262.appspot.com/img/${imageId}`;
+        const ref = storage.refFromURL(gsUrl);
+        return ref.getDownloadURL().then((url) => url.replace(/^gs:\/\//, 'https://'));
+    }
+    
+    // ポップアップのコメントと画像を描画
+    function renderPopupImageAndComment(imageUrl, comment = '') {
+        document.getElementById("treeimage").innerHTML = `<img class="treeimage" src="${imageUrl}">`;
+        document.getElementById("treecomment").innerHTML = comment;
+    }
+    
+    // ポップアップを開く（num に応じて treeData から画像・コメント取得）
+    function openImagePopup(treeData, num) {
+        const wrapper = document.querySelector(".popup-wrapper");
+        wrapper.classList.remove("is-hidden");
+    
+        let imageId, comment = '';
+    
+        if (num === -1) {
+            imageId = 'tutorial.png';
+        } else {
+            imageId = treeData.画像[num];
+            comment = treeData.ユーザーコメント?.[num] || '';
+        }
+    
+        getImageUrlFromStorage(imageId)
+        .then((imageUrl) => renderPopupImageAndComment(imageUrl, comment))
+        .catch((err) => {
+            console.error('画像取得失敗:', err);
+            renderPopupImageAndComment('', '画像の取得に失敗しました');
+        });
+    }
+    
+    // ポップアップを閉じる
+    function closeImagePopup() {
+        document.querySelector(".popup-wrapper").classList.add("is-hidden");
+    }
+    
+    // グローバルに公開（HTMLから使うため）
+    window.openimagePopup = (num) => openImagePopup(treeData, num);
+    window.closeimagePopup = closeImagePopup;
   
     // サムネイル画像たち（最大8件）を取得
     const promises = [];
@@ -395,6 +439,7 @@ function renderTreeImages(treeData) {
   
         promises.push(promise);
     }
+    
   
     Promise.all(promises).then((htmlArray) => {
         addImgEl.innerHTML = htmlArray.join('');
@@ -446,7 +491,7 @@ function setupImageInputHandler() {
     });
 }
 
-function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
+function setupCommentForm(treeData, docId, imgNum, isLoggedIn, displayName) {
     const postCancelBtn = document.getElementById('postCancelBtn');
     const submitBtn = document.getElementById('submitBtn');
     const commentSection = document.querySelector('.commentSection');
@@ -490,11 +535,14 @@ function setupCommentForm(docId, imgNum, isLoggedIn, displayName) {
                     title: "写真を投稿しました！",
                     text: "ありがとう！これからも思い出つくろうね"
                 });
+
+                treeData.画像.push(AddImgName);
+                treeData.ユーザーコメント.push(commentText);
+                treeData.ユーザー.push(displayName);
     
-                const addImgEl = document.getElementById('addimg');
-                const currentImages = addImgEl.querySelectorAll('img').length;
-                const imgHTML = `<img src="${imageUrl}" class="inline-block_img" onclick="openimagePopup(${currentImages})">`;
-                addImgEl.insertAdjacentHTML('beforeend', imgHTML);
+                const newImgIndex = treeData.画像.length - 1;
+                const imgHTML = `<img src="${imageUrl}" class="inline-block_img" onclick="openimagePopup(${newImgIndex})">`;
+                document.getElementById('addimg').insertAdjacentHTML('afterbegin', imgHTML);
     
                 resetForm();
                 setIsSheetShown(false);
